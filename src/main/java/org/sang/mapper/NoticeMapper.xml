@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sang.mapper.NoticeMapper">
+    <resultMap id="BaseResultMap" type="org.sang.bean.Notice">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="content" property="content"/>
+        <result column="cid" property="cid"/>
+        <result column="uid" property="uid"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="state" property="state"/>
+        <result column="editTime" property="editTime"/>
+        <result column="pageView" property="pageView"/>
+        <result column="nickname" property="nickname"/>
+        <result column="cateName" property="cateName"/>
+        <collection property="tags" ofType="org.sang.bean.Tags" column="tagName">
+            <id property="id" column="tid"/>
+            <result property="tagName" column="tagName"/>
+        </collection>
+    </resultMap>
+
+    <insert id="addNotice" parameterType="org.sang.bean.Notice" useGeneratedKeys="true" keyProperty="id">
+         INSERT INTO Notice SET title=#{title},summary=#{summary},content=#{content},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},state=#{state}
+    </insert>
+
+    <select id="getNoticeById" parameterType="Long" resultMap="BaseResultMap">
+   SELECT	noti.*, t.`tagName`,	t.`id` AS tid,	u.`nickname`,	c.`cateName` FROM notice noti
+   LEFT JOIN upfile_tags ats ON noti.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id` LEFT JOIN USER u ON noti.`uid` = u.`id` LEFT JOIN category c ON noti.`cid` = c.`id`
+   WHERE noti.id = #{nid}
+    </select>
+
+    <select id="getNoticeByState" resultType="org.sang.bean.Notice">
+        SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,u.`nickname`,cid,c.`cateName`,a.uid FROM Notice a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
+        <if test="state!=-2">
+            and a.uid=#{uid}
+        </if>
+        <if test="state!=-1 and state!=-2">
+            and a.state=#{state}
+        </if>
+        <if test="state==-2">
+            and a.state=1
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.editTime DESC limit #{start},#{count};
+    </select>
+
+    <select id="getNoticeCountByState" resultType="int">
+        SELECT count(*) FROM Notice
+        <where>
+            <if test="state!=-1">
+                AND state=#{state}
+            </if>
+            <if test="uid!=null">
+                AND uid=#{uid}
+            </if>
+            <if test="keywords!=null">
+                AND title LIKE concat('%',#{keywords},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateNoticeStateById" parameterType="org.sang.bean.Notice">
+        UPDATE notice SET state=#{state} WHERE id=#{id}
+    </update>
+
+    <update id="upNoticeToFirst" parameterType="org.sang.bean.Notice">
+        UPDATE notice SET editTime=#{editTime} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteNoticeById" parameterType="Long">
+        delete form notice where id=#{id} and state=0
+    </delete>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sang.mapper.upFileMapper">
+    <resultMap id="BaseResultMap" type="org.sang.bean.upFile">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="path" property="path"/>
+        <result column="remark" property="remark"/>
+        <result column="cid" property="cid"/>
+        <result column="uid" property="uid"/>
+        <result column="uploadTime" property="uploadTime"/>
+        <result column="editTime" property="editTime"/>
+        <result column="pageView" property="pageView"/>
+        <result column="state" property="state"/>
+    </resultMap>
+
+    <insert id="addupFile" parameterType="org.sang.bean.upFile" useGeneratedKeys="true" keyProperty="id">
+         INSERT INTO upFile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state}
+    </insert>
+    <select id="getupFileById" parameterType="Long" resultMap="BaseResultMap">
+    SELECT	up.*, t.`tagName`,	t.`id` AS tid,	u.`nickname`,	c.`cateName` FROM	upfile up
+LEFT JOIN upfile_tags ats ON up.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id`LEFT JOIN USER u ON up.`uid` = u.`id` LEFT JOIN category c ON up.`cid` = c.`id`
+WHERE up.id = #{fid}
+    </select>
+
+    <select id="getupFileByState" resultType="org.sang.bean.upFile">
+        SELECT a.id,a.`title`,a.`editTime`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM upFile a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
+        <if test="state!=-2">
+            and a.uid=#{uid}
+        </if>
+        <if test="state!=-1 and state!=-2">
+            and a.state=#{state}
+        </if>
+        <if test="state==-2">
+            and a.state=1
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.editTime DESC limit #{start},#{count};
+    </select>
+
+    <select id="getupFileCountByState" resultType="int">
+        SELECT count(*) FROM upFile
+        <where>
+            <if test="state!=-1">
+                AND state=#{state}
+            </if>
+            <if test="uid!=null">
+                AND uid=#{uid}
+            </if>
+            <if test="keywords!=null">
+                AND title LIKE concat('%',#{keywords},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
