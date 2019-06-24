@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Article;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface ArticleMapper {
 
     int getArticleCountByState(@Param("state") Integer state, @Param("keywords") String keywords);
 
-    int updateArticleState(@Param("aids") Long aids[], @Param("state") Integer state);
+    int updateArticleState(@Param("aids") Long aids[], @Param("editTime") Timestamp editTime,@Param("state") Integer state);
 
     int deleteArticleById(@Param("aids") Long[] aids);
 

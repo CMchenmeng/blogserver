@@ -31,6 +31,7 @@ public class NoticeService {
         notice.setEditTime(new Timestamp(System.currentTimeMillis()));  //由于业务逻辑时按照修改时间进行排序，所有新添加的通知公告赋初值
         notice.setUid(Util.getCurrentUser().getId());
         notice.setState(1); //默认第一次添加的通知公告可以显示给所有用户  由管理员添加，所以不需要审核
+        notice.setPageView(0);
         return noticeMapper.addNotice(notice);
     }
 
@@ -57,14 +58,14 @@ public class NoticeService {
         return noticeMapper.getNoticeByState(state, start, count, uid,keywords);
     }
 
-    public int upNoticeToFirst(Notice notice){
-        notice.setEditTime(new Timestamp(System.currentTimeMillis()));
-        return noticeMapper.upNoticeToFirst(notice);
+    public int upNoticeToFirst(Long id){
+        Timestamp editTime = new Timestamp(System.currentTimeMillis());
+        return noticeMapper.upNoticeToFirst(id,editTime);
     }
 
-    public int updateNoticeStateById(Notice notice){
-        notice.setEditTime(new Timestamp(System.currentTimeMillis()));
-        return noticeMapper.updateNoticeStateById(notice);
+    public int updateNoticeStateById(Long id,Integer state){
+        Timestamp editTime = new Timestamp(System.currentTimeMillis());
+        return noticeMapper.updateNoticeStateById(id,state,editTime);
     }
 
     public int deleteNoticeById(Long noticeId){

@@ -22,21 +22,37 @@ public class ArticleService {
     @Autowired
     TagsMapper tagsMapper;
 
-    public int addNewArticle(Article article) {
+    public int addNewArticle(Article article,Integer chooseId) {
         //处理文章摘要
         if (article.getSummary() == null || "".equals(article.getSummary())) {
             //直接截取
             String stripHtml = stripHtml(article.getHtmlContent());
             article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
         }
-        if (article.getId() == -1) {
+        if(chooseId == 0){
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            //设置发表日期
+            article.setPublishDate(timestamp);
+            //更新
+            // article.setEditTime(new Timestamp(System.currentTimeMillis()));
+            int i = articleMapper.updateArticle(article);
+            //修改标签
+            String[] dynamicTags = article.getDynamicTags();
+            if (dynamicTags != null && dynamicTags.length > 0) {
+                int tags = addTagsToArticle(dynamicTags, article.getId());
+                if (tags == -1) {
+                    return tags;
+                }
+            }
+            return i;
+        } else if (chooseId == 1) {
             //添加操作
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            if (article.getState() == 1) {
+            if (article.getState() == 0) {
                 //设置发表日期
                 article.setPublishDate(timestamp);
             }
-            article.setEditTime(timestamp);
+            //article.setEditTime(timestamp);
             //设置当前用户
             article.setUid(Util.getCurrentUser().getId());
             int i = articleMapper.addNewArticle(article);
@@ -49,25 +65,8 @@ public class ArticleService {
                 }
             }
             return i;
-        } else {
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            if (article.getState() == 1) {
-                //设置发表日期
-                article.setPublishDate(timestamp);
-            }
-            //更新
-            article.setEditTime(new Timestamp(System.currentTimeMillis()));
-            int i = articleMapper.updateArticle(article);
-            //修改标签
-            String[] dynamicTags = article.getDynamicTags();
-            if (dynamicTags != null && dynamicTags.length > 0) {
-                int tags = addTagsToArticle(dynamicTags, article.getId());
-                if (tags == -1) {
-                    return tags;
-                }
-            }
-            return i;
-        }
+        } else
+            return chooseId.intValue();
     }
 
     private int addTagsToArticle(String[] dynamicTags, Long aid) {
@@ -108,7 +107,8 @@ public class ArticleService {
         if (state == 2) {
             return articleMapper.deleteArticleById(aids);
         } else {
-            return articleMapper.updateArticleState(aids, 2);//放入到回收站中
+            Timestamp editTime = new Timestamp(System.currentTimeMillis());
+            return articleMapper.updateArticleState(aids,editTime, state);//放入到回收站中
         }
     }
 

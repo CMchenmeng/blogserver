@@ -7,6 +7,7 @@ import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class LoginRegController {
         return new RespBean("error", "尚未登录，请登录!");
     }
 
-    @RequestMapping("/reg")
+    @RequestMapping(value = "/reg",method = RequestMethod.POST)
     public RespBean reg(User user) {
         int result = userService.reg(user);
         if (result == 0) {
@@ -62,4 +63,6 @@ public class LoginRegController {
             return new RespBean("error", "注册失败!");
         }
     }
+
+
 }

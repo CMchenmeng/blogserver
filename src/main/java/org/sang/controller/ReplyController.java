@@ -68,7 +68,7 @@ public class ReplyController {
 
     }
 
-    //通过对应文章帖子的id获取该文章下的所有回复帖子，以及该帖子的状态
+    //通过对应文章帖子的id获取该文章下的所有回复帖子
     @RequestMapping(value = "/getAllReply",method = RequestMethod.GET)
    public RespBean getReplyByActicleId(@RequestParam(value = "state", defaultValue = "1") Integer state,
                                        @RequestParam(value = "page", defaultValue = "1") Integer page,

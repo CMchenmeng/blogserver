@@ -47,8 +47,10 @@ public class ArticleController {
 
     @RequestMapping(value = "/getNotice", method = RequestMethod.GET)
     public RespBean getNoticeById( Long id) {
+        if(id ==null)
+            return RespBean.error("输入的通知公告id为空,请重新输入");
         Notice notice = noticeService.getNoticeById(id);
-        if(notice!=null)
+        if(notice != null)
             return RespBean.ok("根据id获取对应通知公告成功",notice);
         else{
             return RespBean.error("根据id获取对应通知公告失败");
@@ -58,19 +60,27 @@ public class ArticleController {
     //审核员以上权限角色可以对文章帖子进行审核，将状态更改为1   0表示草稿箱待审核，1表示已发表可展示，2表示回收站待删除
     @RequestMapping(value = "/updateArticleState", method = RequestMethod.PUT)
     public  RespBean updateArticleStateById(Long[] aids, Integer state){
+        if(aids.length==0 ||aids == null)
+            return RespBean.error("输入的文章帖子id为空，请重新输入");
+        if(state==null ||state < 0 || state > 2 )
+            return RespBean.error("输入文章帖子的state值有误");
         int result = articleService.updateArticleState(aids,state);
         if(result == 1)
             return RespBean.ok("文章帖子状态已修改！");
         return  RespBean.error("修改文章帖子状态失败！");
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public RespBean addNewArticle(Article article) {
-        int result = articleService.addNewArticle(article);
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public RespBean addNewArticle(Article article,Integer chooseId) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+        if(article == null)
+            return RespBean.error("文章帖子内容为空，请选择正确的操作！");
+        if(chooseId != 0 && chooseId != 1)
+            return RespBean.error("添加/修改文章帖子的操作选项有误");
+        int result = articleService.addNewArticle(article,chooseId);  //chooseId为添加操作，其他的为更改操作
         if (result == 1) {
-            return new RespBean("success", article.getId() + "");
+            return RespBean.ok("更新/发表文章帖子成功");
         } else {
-            return new RespBean("error", article.getState() == 0 ? "文章保存失败!" : "文章发表失败!");
+            return RespBean.ok("更新/发表文章帖子失败!");
         }
     }
 
@@ -120,8 +130,11 @@ public class ArticleController {
     }
 
     @RequestMapping(value = "/getArticle", method = RequestMethod.GET)
-    public Article getArticleById( Long aid) {
-        return articleService.getArticleById(aid);
+    public RespBean getArticleById( Long aid) {
+        if(aid == null)
+            return RespBean.error("输入的文章帖子id为空");
+        Article article = articleService.getArticleById(aid);
+        return RespBean.ok("获取对应id的文章帖子成功",article);
     }
 
     @RequestMapping(value = "/dustbin", method = RequestMethod.PUT)

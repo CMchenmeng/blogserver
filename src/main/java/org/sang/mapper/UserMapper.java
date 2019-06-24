@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Role;
 import org.sang.bean.User;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -16,6 +17,8 @@ public interface UserMapper {
     User loadUserByUsername(@Param("username") String username);
 
     long reg(User user);
+
+    int updateUserPassword(User user);
 
     int updateUserEmail(@Param("email") String email, @Param("id") Long id);
 

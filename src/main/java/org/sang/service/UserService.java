@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -69,6 +70,21 @@ public class UserService implements UserDetailsService {
         return userMapper.updateUserEmail(email, Util.getCurrentUser().getId());
     }
 
+    //
+    public int updateUserPassword(User user){
+        User loadUserByUsername = userMapper.getUserById(user.getId());
+        //User loadUserByUsername = userMapper.loadUserByUsername(user.getUsername());
+        if(loadUserByUsername != null){
+            //修改用户，修改之前先对用户密码进行加密
+            if(user.getPassword()==null)
+                return 3;
+            user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+            user.setEnabled(true);//用户可用
+            int result = userMapper.updateUserPassword(user);
+            return result;
+        }else
+            return 2;
+    }
     public List<User> getUserByNickname(String nickname) {
         List<User> list = userMapper.getUserByNickname(nickname);
         return list;

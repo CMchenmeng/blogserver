@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Notice;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
@@ -11,11 +12,11 @@ public interface NoticeMapper {
 
     int addNotice(Notice notice);
 
-    int updateNoticeStateById(Notice notice);
+    int updateNoticeStateById(@Param("id") Long id,@Param("state") Integer state, @Param("editTime")Timestamp editTime);
 
-    int upNoticeToFirst(Notice notice);
+    int upNoticeToFirst(@Param("id") Long id,@Param("editTime")Timestamp editTime);
 
-    int deleteNoticeById( Long id);
+    int deleteNoticeById(@Param("id") Long id);
 
     Notice getNoticeById( Long id);
 

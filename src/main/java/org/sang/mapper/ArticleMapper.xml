@@ -61,7 +61,7 @@
         </where>
     </select>
     <update id="updateArticleState">
-        UPDATE article SET state=#{state} WHERE id IN
+        UPDATE article SET state=#{state},editTime=#{editTime} WHERE id IN
         <foreach collection="aids" item="aid" separator="," open="(" close=")">
             #{aid}
         </foreach>

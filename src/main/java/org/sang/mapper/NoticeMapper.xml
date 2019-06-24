@@ -65,8 +65,8 @@
         </where>
     </select>
 
-    <update id="updateNoticeStateById" parameterType="org.sang.bean.Notice">
-        UPDATE notice SET state=#{state} WHERE id=#{id}
+    <update id="updateNoticeStateById">
+        UPDATE notice SET state=#{state},editTime=#{editTime} WHERE id=#{id}
     </update>
 
     <update id="upNoticeToFirst" parameterType="org.sang.bean.Notice">
@@ -74,6 +74,6 @@
     </update>
 
     <delete id="deleteNoticeById" parameterType="Long">
-        delete form notice where id=#{id} and state=0
+        delete from notice where id=#{id} and state=0
     </delete>
 </mapper>
