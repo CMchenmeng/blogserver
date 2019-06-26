@@ -55,6 +55,7 @@ public class ArticleService {
             //article.setEditTime(timestamp);
             //设置当前用户
             article.setUid(Util.getCurrentUser().getId());
+            article.setIsTop(0);
             int i = articleMapper.addNewArticle(article);
             //打标签
             String[] dynamicTags = article.getDynamicTags();

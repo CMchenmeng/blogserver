@@ -27,8 +27,8 @@ public class ReplyController {
 
     //发布文章帖子评论
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public RespBean addNewReply(Reply reply){
-        int result = replyService.addNewReply(reply);
+    public RespBean addNewReply(Reply reply,long aid){
+        int result = replyService.addNewReply(aid,reply);
         if (result == 1) {
             //发布文章帖子评论后同时更新对应文章的评论次数
             articleService.pvIncrement(reply.getAid());
@@ -47,19 +47,23 @@ public class ReplyController {
    /* 1.直接对相应评论进行删除
     2.删除帖子后，同时进行相应更新操作（文章对应的pageview-1）*/
    @RequestMapping(value="/delete",method = RequestMethod.PUT)
-   public RespBean deleteReplyById(Reply reply){
-       if(replyService.deleteReplyById(reply.getId())==1){
+   public RespBean deleteReplyById(Long id,Long aid){
+       if(id == null || aid == null){
+           return RespBean.error("传入参数有误,请重新检查！");
+       }
+       if(replyService.deleteReplyById(id)==1){
            //删除帖子的同时，需要将对应文章的回复数量减少（-1）
-           Article article = articleService.getArticleById(reply.getAid());
+           Article article = articleService.getArticleById(aid);
+           //判断文章回复数大于0时才可以进行-1操作
            if(article.getPageView()>0){
-               articleService.pvReduce(article.getId());
+               articleService.pvReduce(aid);
            }
            return RespBean.ok("删除该帖子成功!");
        }
        return RespBean.error("删除该帖子失败！");
    }
 
-   //更改帖子的状态（置0表示为可放入草稿箱）
+   //更改帖子的状态（置0表示为可放入草稿箱）  暂时觉得此功能用不上
     @RequestMapping(value = "/updateState",method = RequestMethod.POST)
     public RespBean updateReplyStateById(Reply reply){
        if(replyService.updateReplyState(reply)==1)

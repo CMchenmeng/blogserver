@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,5 +36,15 @@ public class CategoryService {
     public int addCategory(Category category) {
         category.setDate(new Timestamp(System.currentTimeMillis()));
         return categoryMapper.addCategory(category);
+    }
+
+    public List<Category> getCategoriesById(Integer id){
+        List<Category> list=new ArrayList<Category>();
+        if(id == 1){            //获取法律法规下的所有子类别
+            list = categoryMapper.getCategoriesById(20,35);
+        }
+        if(id == 2)             //获取法律法规下的所有子类别
+            list = categoryMapper.getCategoriesById(36,50);
+        return list;
     }
 }

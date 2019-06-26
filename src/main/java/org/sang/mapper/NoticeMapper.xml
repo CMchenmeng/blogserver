@@ -12,6 +12,7 @@
         <result column="uid" property="uid"/>
         <result column="publishTime" property="publishTime"/>
         <result column="state" property="state"/>
+        <result column="isTop" property="isTop"/>
         <result column="editTime" property="editTime"/>
         <result column="pageView" property="pageView"/>
         <result column="nickname" property="nickname"/>
@@ -23,7 +24,7 @@
     </resultMap>
 
     <insert id="addNotice" parameterType="org.sang.bean.Notice" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO Notice SET title=#{title},summary=#{summary},content=#{content},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},state=#{state}
+         INSERT INTO Notice SET title=#{title},summary=#{summary},content=#{content},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},isTop=#{isTop},state=#{state}
     </insert>
 
     <select id="getNoticeById" parameterType="Long" resultMap="BaseResultMap">
@@ -59,6 +60,8 @@
             <if test="uid!=null">
                 AND uid=#{uid}
             </if>
+            <if test="isTop!=-1"></if>
+                AND isTop=#{isTop}
             <if test="keywords!=null">
                 AND title LIKE concat('%',#{keywords},'%')
             </if>
@@ -70,7 +73,7 @@
     </update>
 
     <update id="upNoticeToFirst" parameterType="org.sang.bean.Notice">
-        UPDATE notice SET editTime=#{editTime} WHERE id=#{id}
+        UPDATE notice SET editTime=#{editTime},isTop=#{isTop}WHERE id=#{id}
     </update>
 
     <delete id="deleteNoticeById" parameterType="Long">

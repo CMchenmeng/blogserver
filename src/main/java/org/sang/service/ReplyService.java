@@ -21,7 +21,7 @@ public class ReplyService {
     @Autowired
     ArticleMapper articleMapper;
 
-    public int addNewReply(Reply reply){
+    public int addNewReply(Long aid,Reply reply){
         //处理文通知公告摘要
         if (reply.getSummary() == null || "".equals(reply.getSummary())) {
             //直接截取
@@ -30,7 +30,8 @@ public class ReplyService {
         }
 
         reply.setPublishTime(new Timestamp(System.currentTimeMillis()));
-       // reply.setEditTime(new Timestamp(System.currentTimeMillis()));  //由于业务逻辑时按照修改时间升序进行排序，所有新添加的帖子回复不需要赋初值
+        reply.setEditTime(new Timestamp(System.currentTimeMillis()));  //业务逻辑时按照上传时间升序进行排序，所有新添加的帖子回复赋初值
+        reply.setAid(aid);
         reply.setUid(Util.getCurrentUser().getId());
         reply.setState(1); //默认第一次添加的回复可以显示给所有用户（否则用户不知道自己是否已发表评论成功）
         return replyMapper.addNewReply(reply);

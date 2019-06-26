@@ -12,6 +12,9 @@ import java.util.List;
  */
 @Mapper
 public interface CategoryMapper {
+
+    List<Category> getCategoriesById(@Param("start") Integer start,@Param("end") Integer end);
+
     List<Category> getAllCategories();
 
     int deleteCategoryByIds(@Param("ids") String[] ids);

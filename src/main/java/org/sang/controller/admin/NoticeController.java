@@ -34,8 +34,8 @@ public class NoticeController {
 
     //置顶操作，由于时按照editTime进行降序排序，只需要更改Notice中的editTime为当前时间即可
     @RequestMapping(value = "/upNoticeToFirst",method = RequestMethod.POST)
-    public RespBean updateNoticeToFirst(Long id){
-        int i = noticeService.upNoticeToFirst(id);
+    public RespBean updateNoticeToFirst(Long id,Integer isTop){
+        int i = noticeService.upNoticeToFirst(id,isTop);
         if (i == 1) {
             return new RespBean("success", "置顶操作成功!");
         }

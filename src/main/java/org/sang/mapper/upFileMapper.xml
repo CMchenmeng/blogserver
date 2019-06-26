@@ -17,20 +17,32 @@
     </resultMap>
 
     <insert id="addupFile" parameterType="org.sang.bean.upFile" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO upFile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state}
+         INSERT INTO upfile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},downNumber=#{downNumber}
     </insert>
+
     <select id="getupFileById" parameterType="Long" resultMap="BaseResultMap">
     SELECT	up.*, t.`tagName`,	t.`id` AS tid,	u.`nickname`,	c.`cateName` FROM	upfile up
 LEFT JOIN upfile_tags ats ON up.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id`LEFT JOIN USER u ON up.`uid` = u.`id` LEFT JOIN category c ON up.`cid` = c.`id`
-WHERE up.id = #{fid}
+WHERE up.id = #{id}
     </select>
 
+    <delete id="deleteUpFileById">
+        DELETE FROM upfile WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateUpFileState">
+        UPDATE upfile SET state=#{state},editTime=#{editTime},suid=#{suid} WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
     <select id="getupFileByState" resultType="org.sang.bean.upFile">
-        SELECT a.id,a.`title`,a.`editTime`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM upFile a,user
-        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
-        <if test="state!=-2">
-            and a.uid=#{uid}
-        </if>
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid <![CDATA[ >= ]]> #{begin} and cid <![CDATA[ <= ]]> #{end}
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}
         </if>
@@ -44,18 +56,37 @@ WHERE up.id = #{fid}
     </select>
 
     <select id="getupFileCountByState" resultType="int">
-        SELECT count(*) FROM upFile
-        <where>
-            <if test="state!=-1">
-                AND state=#{state}
-            </if>
-            <if test="uid!=null">
-                AND uid=#{uid}
-            </if>
-            <if test="keywords!=null">
-                AND title LIKE concat('%',#{keywords},'%')
-            </if>
-        </where>
+        SELECT count(*) FROM upfile where 1=1 and cid <![CDATA[ >= ]]> #{begin} and cid <![CDATA[ <= ]]> #{end}
+        <if test="state!=-1">
+            AND state=#{state}
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
     </select>
 
+    <select id="getupFileByStateAndcid" resultType="org.sang.bean.upFile">
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid=#{cid}
+        <if test="state!=-1 and state!=-2">
+            and a.state=#{state}
+        </if>
+        <if test="state==-2">
+            and a.state=1
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.editTime DESC limit #{start},#{count};
+    </select>
+
+    <select id="getupFileCountByStateAndcid" resultType="int">
+        SELECT count(*) FROM upfile where 1=1 and cid = #{cid}
+        <if test="state!=-1">
+            AND state=#{state}
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+    </select>
 </mapper>

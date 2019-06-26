@@ -3,6 +3,7 @@ package org.sang.controller;
 import org.sang.bean.RespBean;
 import org.sang.bean.upFile;
 import org.sang.service.upFileService;
+import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +45,12 @@ public class UploadController {
         }
         return fileDir;
     }
-    @RequestMapping("/singlefile")
-    public Object singleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file){
+    //法律法规，学习资料的新增上传功能
+    @RequestMapping(value="/singlefile",method = RequestMethod.POST)
+    public Object singleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file,
+                                   @RequestParam("cid") Long cid,
+                                   @RequestParam("title") String title,
+                                   @RequestParam("remark") String remark){
         if(Objects.isNull(file) || file.isEmpty()){
             return new RespBean("error", "文件为空，添加文件失败!");
         }
@@ -75,13 +81,17 @@ public class UploadController {
             url.append("/").append(fileName);
             uploadFilePath.append(filePath).append(File.separator).append(fileName);  //注意平台的区别  不能随意用“/”
 
-
-            //上传成功后同时将路径更新进数据库
+            //上传成功后同时将路径更新进数据库   （suid、editTime）
             upFile upfile = new upFile();
-            upfile.setTitle("测试上传文件1");
-            upfile.setRemark("测试上传");
-            upfile.setState(0);
+            upfile.setTitle(title);
             upfile.setPath(uploadFilePath.toString());
+            upfile.setRemark(remark);
+            upfile.setCid(cid);
+            upfile.setUid(Util.getCurrentUser().getId());
+            upfile.setUploadTime(new Timestamp(System.currentTimeMillis()));
+            upfile.setState(0);
+            upfile.setDownNumber(0);
+
             int result = upfileService.addupFile(upfile);
             if(result==1)
                 return new RespBean("success", "文件上传成功! 文件url="+url.toString());
@@ -158,9 +168,9 @@ public class UploadController {
         return new RespBean("success", "批量上传成功");
     }
 
-    @RequestMapping("/downloadFile")  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
-    public Object downloadFile(HttpServletRequest request, HttpServletResponse response) {
-        upFile upfile = upfileService.getupFileById(1);
+    @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
+    public Object downloadFile(HttpServletRequest request, HttpServletResponse response,Long id) {
+        upFile upfile = upfileService.getupFileById(id);
 
         String fileName = upfile.getPath();  // "1.txt";// 文件名
         if (upfile != null) {

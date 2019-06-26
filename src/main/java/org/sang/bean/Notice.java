@@ -13,6 +13,7 @@ public class Notice {
     private Long uid;
     private Timestamp publishTime;
     private Integer state;
+    private Integer isTop;
     private Timestamp editTime;
     private Integer pageView;
     private String nickname;
@@ -96,6 +97,14 @@ public class Notice {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(Integer isTop) {
+        this.isTop = isTop;
     }
 
     public Timestamp getEditTime() {

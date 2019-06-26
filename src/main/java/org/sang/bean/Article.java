@@ -16,6 +16,7 @@ public class Article {
     private Long uid;
     private Timestamp publishDate;
     private Integer state;
+    private Integer isTop;
     private Integer pageView;
     private Timestamp editTime;
     private String[] dynamicTags;
@@ -143,6 +144,15 @@ public class Article {
     public void setState(Integer state) {
         this.state = state;
     }
+
+    public Integer getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(Integer isTop) {
+        this.isTop = isTop;
+    }
+
 
     public Integer getPageView() {
         return pageView;

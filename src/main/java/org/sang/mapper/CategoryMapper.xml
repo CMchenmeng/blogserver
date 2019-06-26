@@ -18,4 +18,7 @@
     <insert id="addCategory" parameterType="org.sang.bean.Category">
         INSERT INTO category SET date=#{date},cateName=#{cateName}
     </insert>
+    <select id="getCategoriesById" resultType="org.sang.bean.Category">
+        SELECT * from category where id <![CDATA[ >= ]]> #{start} and id  <![CDATA[ <= ]]> #{end}
+    </select>
 </mapper>

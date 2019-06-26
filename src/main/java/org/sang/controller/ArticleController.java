@@ -36,8 +36,9 @@ public class ArticleController {
     public RespBean getNotice(@RequestParam(value = "state",defaultValue = "1") Integer state,
                               @RequestParam(value = "page",defaultValue = "1") Integer page,
                               @RequestParam(value = "count", defaultValue = "6") Integer count,
+                              @RequestParam(value = "isTop",defaultValue = "0") Integer isTop,
                               String keywords){
-        int totalCount = noticeService.getNoticeCountByState(state, Util.getCurrentUser().getId(),keywords);
+        int totalCount = noticeService.getNoticeCountByState(state, Util.getCurrentUser().getId(),isTop,keywords);
         List<Notice> notices = noticeService.getNoticeByState(state, page, count,keywords);
         Map<String, Object> map = new HashMap<>();
         map.put("totalCount", totalCount);
@@ -60,7 +61,7 @@ public class ArticleController {
     //审核员以上权限角色可以对文章帖子进行审核，将状态更改为1   0表示草稿箱待审核，1表示已发表可展示，2表示回收站待删除
     @RequestMapping(value = "/updateArticleState", method = RequestMethod.PUT)
     public  RespBean updateArticleStateById(Long[] aids, Integer state){
-        if(aids.length==0 ||aids == null)
+        if(aids.length == 0 || aids == null)
             return RespBean.error("输入的文章帖子id为空，请重新输入");
         if(state==null ||state < 0 || state > 2 )
             return RespBean.error("输入文章帖子的state值有误");

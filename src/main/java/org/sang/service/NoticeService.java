@@ -32,6 +32,7 @@ public class NoticeService {
         notice.setUid(Util.getCurrentUser().getId());
         notice.setState(1); //默认第一次添加的通知公告可以显示给所有用户  由管理员添加，所以不需要审核
         notice.setPageView(0);
+        notice.setIsTop(0);
         return noticeMapper.addNotice(notice);
     }
 
@@ -48,8 +49,8 @@ public class NoticeService {
         return notice;
     }
 
-    public int getNoticeCountByState(Integer state,Long uid, String keywords){
-        return noticeMapper.getNoticeCountByState(state,uid,keywords);
+    public int getNoticeCountByState(Integer state,Long uid,Integer isTop ,String keywords){
+        return noticeMapper.getNoticeCountByState(state,uid,isTop,keywords);
     }
 
     public List<Notice> getNoticeByState(Integer state, Integer page, Integer count,String keywords){
@@ -58,9 +59,9 @@ public class NoticeService {
         return noticeMapper.getNoticeByState(state, start, count, uid,keywords);
     }
 
-    public int upNoticeToFirst(Long id){
+    public int upNoticeToFirst(Long id,Integer isTop){
         Timestamp editTime = new Timestamp(System.currentTimeMillis());
-        return noticeMapper.upNoticeToFirst(id,editTime);
+        return noticeMapper.upNoticeToFirst(id,editTime,isTop);
     }
 
     public int updateNoticeStateById(Long id,Integer state){
