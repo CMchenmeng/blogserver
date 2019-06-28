@@ -20,7 +20,7 @@ public interface NoticeMapper {
 
     Notice getNoticeById( Long id);
 
-    int getNoticeCountByState(@Param("state") Integer state, @Param("uid") Long uid,@Param("isTop") Integer isTop, @Param("keywords") String keywords);
+    int getNoticeCountByState(@Param("state") Integer state, @Param("uid") Long uid, @Param("keywords") String keywords);
 
     List<Notice> getNoticeByState(@Param("state") Integer state, @Param("start") Integer start, @Param("count") Integer count, @Param("uid") Long uid, @Param("keywords") String keywords);
 

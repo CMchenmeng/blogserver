@@ -36,9 +36,8 @@ public class ArticleController {
     public RespBean getNotice(@RequestParam(value = "state",defaultValue = "1") Integer state,
                               @RequestParam(value = "page",defaultValue = "1") Integer page,
                               @RequestParam(value = "count", defaultValue = "6") Integer count,
-                              @RequestParam(value = "isTop",defaultValue = "0") Integer isTop,
                               String keywords){
-        int totalCount = noticeService.getNoticeCountByState(state, Util.getCurrentUser().getId(),isTop,keywords);
+        int totalCount = noticeService.getNoticeCountByState(state, Util.getCurrentUser().getId(),keywords);
         List<Notice> notices = noticeService.getNoticeByState(state, page, count,keywords);
         Map<String, Object> map = new HashMap<>();
         map.put("totalCount", totalCount);
@@ -46,7 +45,7 @@ public class ArticleController {
         return RespBean.ok("获取通知公告成功",map);
     }
 
-    @RequestMapping(value = "/getNotice", method = RequestMethod.GET)
+    @RequestMapping(value = "/getNoticeById", method = RequestMethod.GET)
     public RespBean getNoticeById( Long id) {
         if(id ==null)
             return RespBean.error("输入的通知公告id为空,请重新输入");
@@ -71,13 +70,13 @@ public class ArticleController {
         return  RespBean.error("修改文章帖子状态失败！");
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
     public RespBean addNewArticle(Article article,Integer chooseId) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
         if(article == null)
             return RespBean.error("文章帖子内容为空，请选择正确的操作！");
         if(chooseId != 0 && chooseId != 1)
             return RespBean.error("添加/修改文章帖子的操作选项有误");
-        int result = articleService.addNewArticle(article,chooseId);  //chooseId为添加操作，其他的为更改操作
+        int result = articleService.addNewArticle(article,chooseId);  //chooseId=1为添加操作，=0的为更改操作
         if (result == 1) {
             return RespBean.ok("更新/发表文章帖子成功");
         } else {
@@ -117,7 +116,7 @@ public class ArticleController {
         return new RespBean("error", "上传失败!");
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/allArticle", method = RequestMethod.GET)
     public RespBean getArticleByState(@RequestParam(value = "state", defaultValue = "1") Integer state,
                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                  @RequestParam(value = "count", defaultValue = "10") Integer count,
@@ -130,7 +129,17 @@ public class ArticleController {
         return RespBean.ok("获取文章帖子成功",map);
     }
 
-    @RequestMapping(value = "/getArticle", method = RequestMethod.GET)
+    //置顶操作
+    @RequestMapping(value = "/updateArticleTop",method = RequestMethod.POST)
+    public RespBean updateArticleTop(Long aid,Integer isTop){
+        int i = articleService.updateArticleTop(aid,isTop);
+        if (i == 1) {
+            return new RespBean("success", "文章帖子设置/取消置顶操作成功!");
+        }
+        return new RespBean("error", "文章帖子设置/取消置顶操作失败!");
+    }
+
+    @RequestMapping(value = "/getArticleById", method = RequestMethod.GET)
     public RespBean getArticleById( Long aid) {
         if(aid == null)
             return RespBean.error("输入的文章帖子id为空");

@@ -32,14 +32,14 @@ public class NoticeController {
     }
 
 
-    //置顶操作，由于时按照editTime进行降序排序，只需要更改Notice中的editTime为当前时间即可
-    @RequestMapping(value = "/upNoticeToFirst",method = RequestMethod.POST)
+    //置顶操作
+    @RequestMapping(value = "/updateNoticeTop",method = RequestMethod.GET)
     public RespBean updateNoticeToFirst(Long id,Integer isTop){
         int i = noticeService.upNoticeToFirst(id,isTop);
         if (i == 1) {
-            return new RespBean("success", "置顶操作成功!");
+            return new RespBean("success", "通知公告设置/取消置顶操作成功!");
         }
-        return new RespBean("error", "置顶操作失败!");
+        return new RespBean("error", "设置/取消置顶操作失败!");
     }
 
     //将通知公告放入草稿箱  即设置state为0  state由前端传入
@@ -58,8 +58,8 @@ public class NoticeController {
     @RequestMapping(value = "/deleteNotice", method = RequestMethod.PUT)
     public RespBean deleteNoticeById( Long id) {
         if (noticeService.deleteNoticeById(id)==1) {
-            return new RespBean("success", "删除通知公告成功!");
+            return  RespBean.ok("删除通知公告成功!");
         }
-        return new RespBean("error", "删除通知公告失败!");
+        return RespBean.error("删除通知公告失败!");
     }
 }

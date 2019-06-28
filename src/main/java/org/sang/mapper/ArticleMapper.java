@@ -28,6 +28,8 @@ public interface ArticleMapper {
 
     Article getArticleById(Long aid);
 
+    int updateArticleTop(@Param("aid") Long aid,@Param("editTime")Timestamp editTime,@Param("isTop") Integer isTop);
+
     void pvIncrement(Long aid);
 
     void pvReduce(Long aid);

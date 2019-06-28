@@ -14,10 +14,11 @@
         <result column="editTime" property="editTime"/>
         <result column="pageView" property="pageView"/>
         <result column="state" property="state"/>
+        <result column="isTop" property="isTop"/>
     </resultMap>
 
     <insert id="addupFile" parameterType="org.sang.bean.upFile" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO upfile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},downNumber=#{downNumber}
+         INSERT INTO upfile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},isTop=#{isTop},downNumber=#{downNumber}
     </insert>
 
     <select id="getupFileById" parameterType="Long" resultMap="BaseResultMap">
@@ -41,7 +42,7 @@ WHERE up.id = #{id}
     </update>
 
     <select id="getupFileByState" resultType="org.sang.bean.upFile">
-        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,a.`cid`,a.`isTop`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid <![CDATA[ >= ]]> #{begin} and cid <![CDATA[ <= ]]> #{end}
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}
@@ -52,7 +53,7 @@ WHERE up.id = #{id}
         <if test="keywords!=null">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
-        ORDER BY a.editTime DESC limit #{start},#{count};
+        ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
     </select>
 
     <select id="getupFileCountByState" resultType="int">
@@ -66,7 +67,7 @@ WHERE up.id = #{id}
     </select>
 
     <select id="getupFileByStateAndcid" resultType="org.sang.bean.upFile">
-        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,a.`isTop`,a.`cid`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM upfile a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid=#{cid}
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}
@@ -77,7 +78,7 @@ WHERE up.id = #{id}
         <if test="keywords!=null">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
-        ORDER BY a.editTime DESC limit #{start},#{count};
+        ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
     </select>
 
     <select id="getupFileCountByStateAndcid" resultType="int">
@@ -89,4 +90,8 @@ WHERE up.id = #{id}
             AND title LIKE concat('%',#{keywords},'%')
         </if>
     </select>
+
+    <update id="upFileToFirst" parameterType="org.sang.bean.upFile">
+        UPDATE upfile SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
+    </update>
 </mapper>

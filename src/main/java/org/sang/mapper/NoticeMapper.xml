@@ -28,13 +28,13 @@
     </insert>
 
     <select id="getNoticeById" parameterType="Long" resultMap="BaseResultMap">
-   SELECT	noti.*, t.`tagName`,	t.`id` AS tid,	u.`nickname`,	c.`cateName` FROM notice noti
+   SELECT	noti.*, t.`tagName`,t.`id` AS tid,u.`nickname`,	c.`cateName` FROM notice noti
    LEFT JOIN upfile_tags ats ON noti.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id` LEFT JOIN USER u ON noti.`uid` = u.`id` LEFT JOIN category c ON noti.`cid` = c.`id`
    WHERE noti.id = #{nid}
     </select>
 
     <select id="getNoticeByState" resultType="org.sang.bean.Notice">
-        SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,u.`nickname`,cid,c.`cateName`,a.uid FROM Notice a,user
+        SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,a.`isTop`,a.`pageView`,u.`nickname`,a.`cid`,c.`cateName`,a.uid FROM Notice a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
         <if test="state!=-2">
             and a.uid=#{uid}
@@ -48,7 +48,7 @@
         <if test="keywords!=null">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
-        ORDER BY a.editTime DESC limit #{start},#{count};
+        ORDER BY a.isTop DESC, a.editTime DESC limit #{start},#{count};
     </select>
 
     <select id="getNoticeCountByState" resultType="int">
@@ -60,8 +60,6 @@
             <if test="uid!=null">
                 AND uid=#{uid}
             </if>
-            <if test="isTop!=-1"></if>
-                AND isTop=#{isTop}
             <if test="keywords!=null">
                 AND title LIKE concat('%',#{keywords},'%')
             </if>
@@ -73,10 +71,10 @@
     </update>
 
     <update id="upNoticeToFirst" parameterType="org.sang.bean.Notice">
-        UPDATE notice SET editTime=#{editTime},isTop=#{isTop}WHERE id=#{id}
+        UPDATE notice SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
     </update>
 
     <delete id="deleteNoticeById" parameterType="Long">
-        delete from notice where id=#{id} and state=0
+        delete from notice where id=#{id}
     </delete>
 </mapper>

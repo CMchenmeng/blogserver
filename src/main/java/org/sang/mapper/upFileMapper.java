@@ -29,4 +29,6 @@ public interface upFileMapper {
     List<upFile> getupFileByStateAndcid(@Param("state") Integer state, @Param("start") Integer start, @Param("count") Integer count,@Param("keywords") String keywords,@Param("cid") Long cid);
 
     int getupFileCountByStateAndcid(@Param("state") Integer state, @Param("keywords") String keywords, @Param("cid") Long cid);
+
+    int upFileToFirst(@Param("id") Long id,@Param("editTime")Timestamp editTime,@Param("isTop") Integer isTop);
 }

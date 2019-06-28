@@ -23,7 +23,7 @@ public class LoginRegController {
 
     @RequestMapping("/login_error")
     public RespBean loginError() {
-        return new RespBean("error", "登录失败!");
+        return RespBean.error( "登录失败!");
     }
 
     @RequestMapping("/login_success")
@@ -35,7 +35,7 @@ public class LoginRegController {
                 role = "admin";
             }
         }
-        return new RespBean("success", "登录成功!",role);
+        return RespBean.ok( "登录成功!",role);
     }
 
     /**
@@ -47,7 +47,7 @@ public class LoginRegController {
      */
     @RequestMapping("/login_page")
     public RespBean loginPage() {
-        return new RespBean("error", "尚未登录，请登录!");
+        return RespBean.error( "尚未登录，请登录!");
     }
 
     @RequestMapping(value = "/reg",method = RequestMethod.POST)
@@ -55,12 +55,12 @@ public class LoginRegController {
         int result = userService.reg(user);
         if (result == 0) {
             //成功
-            return new RespBean("success", "注册成功!");
+            return  RespBean.ok("success", "注册成功!");
         } else if (result == 1) {
-            return new RespBean("error", "用户名重复，注册失败!");
+            return RespBean.error("error", "用户名重复，注册失败!");
         } else {
             //失败
-            return new RespBean("error", "注册失败!");
+            return RespBean.error("error", "注册失败!");
         }
     }
 

@@ -32,7 +32,7 @@ public class ArticleService {
         if(chooseId == 0){
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             //设置发表日期
-            article.setPublishDate(timestamp);
+            article.setPublishTime(timestamp);
             //更新
             // article.setEditTime(new Timestamp(System.currentTimeMillis()));
             int i = articleMapper.updateArticle(article);
@@ -50,7 +50,7 @@ public class ArticleService {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             if (article.getState() == 0) {
                 //设置发表日期
-                article.setPublishDate(timestamp);
+                article.setPublishTime(timestamp);
             }
             //article.setEditTime(timestamp);
             //设置当前用户
@@ -119,6 +119,10 @@ public class ArticleService {
         return article;
     }
 
+    public int updateArticleTop(Long aid,Integer isTop){
+        Timestamp editTime = new Timestamp(System.currentTimeMillis());
+        return articleMapper.updateArticleTop(aid,editTime,isTop);
+    }
 
     public void pvIncrement(Long aid){
       articleMapper.pvIncrement(aid);

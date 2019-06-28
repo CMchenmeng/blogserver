@@ -15,6 +15,7 @@ public class upFile {
     private Timestamp editTime;
     private Long suid;
     private Integer state;
+    private Integer isTop;
     private Integer downNumber;
     private List<Tags> tags;
 
@@ -131,5 +132,13 @@ public class upFile {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(Integer isTop) {
+        this.isTop = isTop;
     }
 }

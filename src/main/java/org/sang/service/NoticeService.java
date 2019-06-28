@@ -49,8 +49,8 @@ public class NoticeService {
         return notice;
     }
 
-    public int getNoticeCountByState(Integer state,Long uid,Integer isTop ,String keywords){
-        return noticeMapper.getNoticeCountByState(state,uid,isTop,keywords);
+    public int getNoticeCountByState(Integer state,Long uid,String keywords){
+        return noticeMapper.getNoticeCountByState(state,uid,keywords);
     }
 
     public List<Notice> getNoticeByState(Integer state, Integer page, Integer count,String keywords){

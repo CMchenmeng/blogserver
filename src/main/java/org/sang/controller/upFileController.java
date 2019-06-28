@@ -25,10 +25,10 @@ public class upFileController {
 
     //Id =1代表获取法律法规的子类别   20 < Id  < 35的所有category
     //Id =2代表获取学习资料的子类别   36 < Id  < 50的所有category
-    @RequestMapping(value = "/getCategoriesById", method = RequestMethod.GET)
-    public RespBean getCategoriesById(Integer id){
-        if(id == 1 || id == 2){
-            List<Category> list = categoryService.getCategoriesById(id);
+    @RequestMapping(value = "/getCategories", method = RequestMethod.GET)
+    public RespBean getCategoriesById(Integer type){
+        if(type == 1 || type == 2){
+            List<Category> list = categoryService.getCategoriesById(type);
             if (!list.isEmpty()){
                 Map<String, Object> map = new HashMap<>();
                 map.put("categories",list);
@@ -41,14 +41,14 @@ public class upFileController {
 
     //Id =1代表获取法律法规类别的所有文件   20 < Id < 35的所有category
     //Id =2代表获取学习资料类别的所有文件   36 < Id  < 50的所有category
-    @RequestMapping(value = "/allById", method = RequestMethod.GET)
+    @RequestMapping(value = "/allUpfile", method = RequestMethod.GET)
     public RespBean getupFileByState(@RequestParam(value = "state",defaultValue = "1") Integer state,
                                      @RequestParam(value = "page",defaultValue = "1") Integer page,
                                      @RequestParam(value = "count", defaultValue = "6") Integer count,
-                                     Integer id ,String keywords){
-        if(id  == 1 || id  == 2){
-            int totalCount = upfileService.getupFileCountByState(state,id ,keywords);
-            List<upFile> upfiles = upfileService.getupFileByState(state, page, count,id ,keywords);
+                                     Integer type ,String keywords){
+        if(type  == 1 || type  == 2){
+            int totalCount = upfileService.getupFileCountByState(state,type ,keywords);
+            List<upFile> upfiles = upfileService.getupFileByState(state, page, count,type ,keywords);
             Map<String, Object> map = new HashMap<>();
             map.put("totalCount", totalCount);
             map.put("upfiles", upfiles);
@@ -58,7 +58,7 @@ public class upFileController {
     }
 
     //根据类别cid获取相应所有文件资料
-    @RequestMapping(value = "getupFileBycid",method = RequestMethod.GET)
+    @RequestMapping(value = "getUpFileBycid",method = RequestMethod.GET)
     public RespBean getupFileBycid(@RequestParam(value = "state",defaultValue = "1") Integer state,
                                    @RequestParam(value = "page",defaultValue = "1") Integer page,
                                    @RequestParam(value = "count", defaultValue = "6") Integer count,
@@ -76,7 +76,7 @@ public class upFileController {
 
     //审核员模块
     //0代表未审核，1代表审核通过，2代表删除该文件
-    @RequestMapping(value = "updateFileState" ,method=RequestMethod.POST)
+    @RequestMapping(value = "updateUpfileState" ,method=RequestMethod.POST)
     public RespBean updateFileStateById(Long[] ids,Integer state){
         if(ids.length == 0 || ids== null){
             return RespBean.error("传入的文件id有误，请重新检查!");
@@ -89,7 +89,17 @@ public class upFileController {
         return  RespBean.error("修改文件状态失败！");
     }
 
-    @RequestMapping(value = "/getFileById", method = RequestMethod.GET)
+    //置顶操作
+    @RequestMapping(value = "/updateUpfileTop",method = RequestMethod.GET)
+    public RespBean upFileToFirst(Long id,Integer isTop){
+        int i = upfileService.upFileToFirst(id,isTop);
+        if (i == 1) {
+            return new RespBean("success", "资料设置/取消置顶操作成功!");
+        }
+        return new RespBean("error", "资料设置/取消置顶操作失败!");
+    }
+
+    @RequestMapping(value = "/getUpfileById", method = RequestMethod.GET)
     public RespBean getupFileById(Long id) {
         if(id != null){
             upFile upfile = upfileService.getupFileById(id);

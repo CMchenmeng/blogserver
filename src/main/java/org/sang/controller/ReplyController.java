@@ -26,7 +26,7 @@ public class ReplyController {
     ArticleService articleService;
 
     //发布文章帖子评论
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/addReply", method = RequestMethod.POST)
     public RespBean addNewReply(Reply reply,long aid){
         int result = replyService.addNewReply(aid,reply);
         if (result == 1) {
@@ -46,7 +46,7 @@ public class ReplyController {
    //管理员审核员角色后台对评论进行删除
    /* 1.直接对相应评论进行删除
     2.删除帖子后，同时进行相应更新操作（文章对应的pageview-1）*/
-   @RequestMapping(value="/delete",method = RequestMethod.PUT)
+   @RequestMapping(value="/deleteReplyById",method = RequestMethod.PUT)
    public RespBean deleteReplyById(Long id,Long aid){
        if(id == null || aid == null){
            return RespBean.error("传入参数有误,请重新检查！");
@@ -64,7 +64,7 @@ public class ReplyController {
    }
 
    //更改帖子的状态（置0表示为可放入草稿箱）  暂时觉得此功能用不上
-    @RequestMapping(value = "/updateState",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateReplyState",method = RequestMethod.POST)
     public RespBean updateReplyStateById(Reply reply){
        if(replyService.updateReplyState(reply)==1)
            return RespBean.ok("更改帖子状态成功，已放入草稿箱!");

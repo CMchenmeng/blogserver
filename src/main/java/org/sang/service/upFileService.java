@@ -37,12 +37,12 @@ public class upFileService {
         }
     }
 
-    public List<upFile> getupFileByState(Integer state, Integer page, Integer count, Integer id ,String keywords){
+    public List<upFile> getupFileByState(Integer state, Integer page, Integer count, Integer type ,String keywords){
         int start = (page - 1) * count;
         List<upFile> list = new ArrayList<upFile>();
-        if(id  == 1)
+        if(type  == 1)
             list = upfileMapper.getupFileByState(state,start,count,keywords,20,35);
-        if(id  == 2)
+        if(type  == 2)
             list = upfileMapper.getupFileByState(state,start,count,keywords,36,40);
         return list;
     }
@@ -65,4 +65,8 @@ public class upFileService {
         return upfileMapper.getupFileCountByStateAndcid(state,keywords,cid);
     }
 
+    public int upFileToFirst(Long id,Integer isTop){
+        Timestamp editTime = new Timestamp(System.currentTimeMillis());
+        return upfileMapper.upFileToFirst(id,editTime,isTop);
+    }
 }

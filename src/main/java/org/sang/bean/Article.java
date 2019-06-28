@@ -14,7 +14,7 @@ public class Article {
     private String summary;
     private Long cid;
     private Long uid;
-    private Timestamp publishDate;
+    private Timestamp publishTime;
     private Integer state;
     private Integer isTop;
     private Integer pageView;
@@ -129,12 +129,12 @@ public class Article {
         this.uid = uid;
     }
 
-    public Timestamp getPublishDate() {
-        return publishDate;
+    public Timestamp getPublishTime() {
+        return publishTime;
     }
 
-    public void setPublishDate(Timestamp publishDate) {
-        this.publishDate = publishDate;
+    public void setPublishTime(Timestamp publishTime) {
+        this.publishTime = publishTime;
     }
 
     public Integer getState() {

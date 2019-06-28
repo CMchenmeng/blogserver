@@ -22,7 +22,7 @@ import java.util.UUID;
 
 //上传文件
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/file")
 public class UploadController {
 
     @Autowired
@@ -46,7 +46,7 @@ public class UploadController {
         return fileDir;
     }
     //法律法规，学习资料的新增上传功能
-    @RequestMapping(value="/singlefile",method = RequestMethod.POST)
+    @RequestMapping(value="/uploadsingleFile",method = RequestMethod.POST)
     public Object singleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file,
                                    @RequestParam("cid") Long cid,
                                    @RequestParam("title") String title,
@@ -90,6 +90,7 @@ public class UploadController {
             upfile.setUid(Util.getCurrentUser().getId());
             upfile.setUploadTime(new Timestamp(System.currentTimeMillis()));
             upfile.setState(0);
+            upfile.setIsTop(0);
             upfile.setDownNumber(0);
 
             int result = upfileService.addupFile(upfile);
