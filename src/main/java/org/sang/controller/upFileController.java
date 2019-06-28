@@ -83,20 +83,26 @@ public class upFileController {
         }
         if(state==null ||state < 0 || state > 2 )
             return RespBean.error("输入相关文件的state值有误");
-        int result = upfileService.updateUpFileState(ids,state);
-        if(result != 0)
-            return RespBean.ok("文件的状态已修改！");
-        return  RespBean.error("修改文件状态失败！");
+        if(Util.isShenhe()){
+            int result = upfileService.updateUpFileState(ids,state);
+            if(result != 0)
+                return RespBean.ok("文件的状态已修改！");
+            return  RespBean.error("修改文件状态失败！");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
 
     //置顶操作
     @RequestMapping(value = "/updateUpfileTop",method = RequestMethod.GET)
     public RespBean upFileToFirst(Long id,Integer isTop){
-        int i = upfileService.upFileToFirst(id,isTop);
-        if (i == 1) {
-            return new RespBean("success", "资料设置/取消置顶操作成功!");
-        }
-        return new RespBean("error", "资料设置/取消置顶操作失败!");
+        if(Util.isShenhe()){
+            int i = upfileService.upFileToFirst(id,isTop);
+            if (i == 1) {
+                return new RespBean("success", "资料设置/取消置顶操作成功!");
+            }
+            return new RespBean("error", "资料设置/取消置顶操作失败!");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
 
     @RequestMapping(value = "/getUpfileById", method = RequestMethod.GET)

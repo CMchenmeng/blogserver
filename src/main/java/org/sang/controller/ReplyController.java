@@ -5,6 +5,7 @@ import org.sang.bean.Reply;
 import org.sang.bean.RespBean;
 import org.sang.service.ArticleService;
 import org.sang.service.ReplyService;
+import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,28 +48,36 @@ public class ReplyController {
    /* 1.直接对相应评论进行删除
     2.删除帖子后，同时进行相应更新操作（文章对应的pageview-1）*/
    @RequestMapping(value="/deleteReplyById",method = RequestMethod.PUT)
-   public RespBean deleteReplyById(Long id,Long aid){
-       if(id == null || aid == null){
+   public RespBean deleteReplyById(Long id){
+       if(id == null){
            return RespBean.error("传入参数有误,请重新检查！");
        }
-       if(replyService.deleteReplyById(id)==1){
-           //删除帖子的同时，需要将对应文章的回复数量减少（-1）
-           Article article = articleService.getArticleById(aid);
-           //判断文章回复数大于0时才可以进行-1操作
-           if(article.getPageView()>0){
-               articleService.pvReduce(aid);
+       if(Util.isShenhe()){
+           if(replyService.deleteReplyById(id)==1){
+               Reply reply = replyService.getReplyById(id);
+               //删除帖子的同时，需要将对应文章的回复数量减少（-1）
+               Article article = articleService.getArticleById(reply.getAid());
+               //判断文章回复数大于0时才可以进行-1操作
+               if(article.getPageView()>0){
+                   articleService.pvReduce(reply.getAid());
+               }
+               return RespBean.ok("删除该帖子成功!");
            }
-           return RespBean.ok("删除该帖子成功!");
-       }
-       return RespBean.error("删除该帖子失败！");
+           return RespBean.error("删除该帖子失败！");
+       }else
+           return RespBean.error("你的权限不足，请联系管理员修改权限");
    }
 
    //更改帖子的状态（置0表示为可放入草稿箱）  暂时觉得此功能用不上
     @RequestMapping(value = "/updateReplyState",method = RequestMethod.POST)
-    public RespBean updateReplyStateById(Reply reply){
-       if(replyService.updateReplyState(reply)==1)
-           return RespBean.ok("更改帖子状态成功，已放入草稿箱!");
-        return RespBean.ok("更改帖子状态失败!");
+    public RespBean updateReplyState(Long rid,Integer state){
+       if (Util.isShenhe()){
+           if(replyService.updateReplyState(rid,state)==1)
+               return RespBean.ok("更改帖子状态成功，已放入草稿箱!");
+           return RespBean.ok("更改帖子状态失败!");
+       }else
+           return RespBean.error("你的权限不足，请联系管理员修改权限");
+
 
     }
 

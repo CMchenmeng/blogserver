@@ -27,10 +27,33 @@
             </otherwise>
         </choose>
     </select>
+    
+    <select id="getUserCountByRole" resultType="int">
+        SELECT count(*) FROM user u inner join roles_user ru on u.id=ru.uid WHERE ru.rid IN
+        <foreach collection="rids" item="rid" separator="," open="(" close=")">
+            #{rid}
+        </foreach>
+        <if test="keywords!=null and keywords!=''">
+            AND nickname LIKE concat('%',#{keywords},'%')
+        </if>
+    </select>
+
+    <select id="getUserByRole" resultType="org.sang.bean.User">
+        SELECT u.*  FROM user u inner join roles_user ru on u.id=ru.uid WHERE ru.rid IN
+        <foreach collection="rids" item="rid" separator="," open="(" close=")">
+            #{rid}
+        </foreach>
+        <if test="keywords!=null and keywords!=''">
+            AND nickname LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY u.regTime DESC limit #{start},#{count};
+    </select>
+
     <select id="getUserById" resultMap="BaseResultMap">
         SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
         r.`id`=ru.`rid` AND u.`id`=#{id}
     </select>
+
     <resultMap id="BaseResultMap" type="org.sang.bean.User">
         <id column="id" property="id"/>
         <result column="username" property="username"/>

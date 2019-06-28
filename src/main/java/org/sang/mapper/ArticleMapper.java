@@ -24,7 +24,7 @@ public interface ArticleMapper {
 
     int updateArticleState(@Param("aids") Long aids[], @Param("editTime") Timestamp editTime,@Param("state") Integer state);
 
-    int deleteArticleById(@Param("aids") Long[] aids);
+    int deleteArticleById(@Param("aid") Long aids);
 
     Article getArticleById(Long aid);
 

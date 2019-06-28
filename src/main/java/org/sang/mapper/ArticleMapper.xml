@@ -68,11 +68,9 @@
     </update>
 
     <delete id="deleteArticleById">
-        DELETE FROM article WHERE id IN
-        <foreach collection="aids" item="aid" open="(" close=")" separator=",">
-            #{aid}
-        </foreach>
+        DELETE FROM article WHERE id=#{aid}
     </delete>
+
     <select id="getArticleById" parameterType="Long" resultMap="BaseResultMap">
         SELECT a.*,t.`tagName`,t.`id` AS tid,u.`nickname`,c.`cateName` FROM article a LEFT JOIN article_tags ats ON a.`id`=ats.`aid`
         LEFT JOIN tags t ON ats.`tid`=t.`id` LEFT JOIN user u ON a.`uid`=u.`id` LEFT JOIN category c ON a.`cid`=c.`id` WHERE a.id=#{aid}

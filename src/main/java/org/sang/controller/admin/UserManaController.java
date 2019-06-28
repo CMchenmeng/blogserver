@@ -5,12 +5,12 @@ import org.sang.bean.Role;
 import org.sang.bean.User;
 import org.sang.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sang on 2017/12/24.
@@ -21,7 +21,7 @@ public class UserManaController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserByNickname", method = RequestMethod.GET)
     public RespBean getUserByNickname(String nickname) {
         List<User> user = userService.getUserByNickname(nickname);
         if(user!=null)
@@ -29,7 +29,7 @@ public class UserManaController {
         return RespBean.error("获取用户信息失败！");
     }
 
-    @RequestMapping(value = "/userById", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserById", method = RequestMethod.GET)
     public RespBean getUserById( Long id) {
         User user =userService.getUserById(id);
         if(user!=null)
@@ -85,5 +85,34 @@ public class UserManaController {
         } else {
             return RespBean.error("更新失败!");
         }
+    }
+
+    //获取所有角色的用户
+    @RequestMapping(value = "/getUserByRole", method = RequestMethod.GET)
+    public RespBean getUserByRole(@RequestParam(value = "page",defaultValue = "1") Integer page,
+                                  @RequestParam(value = "count", defaultValue = "6") Integer count,
+                                  String keywords,String role){
+        if(role.contains("审核人员") ){
+            List<Long> rids = new ArrayList<Long>();
+            rids.add(new Long(2));
+            int totalCount = userService.getUserCountByRole(rids,keywords);
+            List<User> users = userService.getUserByRole(rids, page, count,keywords);
+            Map<String, Object> map = new HashMap<>();
+            map.put("totalCount", totalCount);
+            map.put("users", users);
+            return RespBean.ok("获取审核人员角色的用户成功",map);
+        }else if(role.contains("普通用户")){
+            List<Long> rids = new ArrayList<Long>();
+            rids.add(new Long(3));
+            rids.add(new Long(4));
+            rids.add(new Long(5));
+            int totalCount = userService.getUserCountByRole(rids,keywords);
+            List<User> users = userService.getUserByRole(rids, page, count,keywords);
+            Map<String, Object> map = new HashMap<>();
+            map.put("totalCount", totalCount);
+            map.put("users", users);
+            return RespBean.ok("获取普通用户角色的用户成功",map);
+        }else
+            return RespBean.error("传入参数有误，没有相应角色的用户，请检查后重试");
     }
 }

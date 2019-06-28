@@ -4,6 +4,7 @@ import org.sang.bean.Article;
 import org.sang.bean.Notice;
 import org.sang.bean.Reply;
 import org.sang.mapper.ArticleMapper;
+import org.sang.mapper.ReplyMapper;
 import org.sang.mapper.TagsMapper;
 import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,57 +18,60 @@ import java.util.List;
 @Service
 @Transactional
 public class ArticleService {
+
     @Autowired
     ArticleMapper articleMapper;
+
+    @Autowired
+    ReplyMapper replyMapper;
+
     @Autowired
     TagsMapper tagsMapper;
 
-    public int addNewArticle(Article article,Integer chooseId) {
+    public int updateArticle(Article article) {
         //处理文章摘要
         if (article.getSummary() == null || "".equals(article.getSummary())) {
             //直接截取
             String stripHtml = stripHtml(article.getHtmlContent());
             article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
         }
-        if(chooseId == 0){
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            //设置发表日期
-            article.setPublishTime(timestamp);
-            //更新
-            // article.setEditTime(new Timestamp(System.currentTimeMillis()));
-            int i = articleMapper.updateArticle(article);
-            //修改标签
-            String[] dynamicTags = article.getDynamicTags();
-            if (dynamicTags != null && dynamicTags.length > 0) {
-                int tags = addTagsToArticle(dynamicTags, article.getId());
-                if (tags == -1) {
-                    return tags;
-                }
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //设置发表日期
+        article.setEditTime(timestamp);
+        //更新
+        // article.setEditTime(new Timestamp(System.currentTimeMillis()));
+        int i = articleMapper.updateArticle(article);
+        //修改标签
+        String[] dynamicTags = article.getDynamicTags();
+        if (dynamicTags != null && dynamicTags.length > 0) {
+            int tags = addTagsToArticle(dynamicTags, article.getId());
+            if (tags == -1) {
+                return tags;
             }
-            return i;
-        } else if (chooseId == 1) {
-            //添加操作
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            if (article.getState() == 0) {
-                //设置发表日期
-                article.setPublishTime(timestamp);
+        }
+        return i;
+    }
+
+    public int addArticle(Article article) {
+        //添加操作
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //设置发表日期
+        article.setPublishTime(timestamp);
+        //设置当前用户
+        article.setUid(Util.getCurrentUser().getId());
+        article.setState(0);
+        article.setIsTop(0);
+        article.setPageView(0);
+        int i = articleMapper.addNewArticle(article);
+        //打标签
+        String[] dynamicTags = article.getDynamicTags();
+        if (dynamicTags != null && dynamicTags.length > 0) {
+            int tags = addTagsToArticle(dynamicTags, article.getId());
+            if (tags == -1) {
+                return tags;
             }
-            //article.setEditTime(timestamp);
-            //设置当前用户
-            article.setUid(Util.getCurrentUser().getId());
-            article.setIsTop(0);
-            int i = articleMapper.addNewArticle(article);
-            //打标签
-            String[] dynamicTags = article.getDynamicTags();
-            if (dynamicTags != null && dynamicTags.length > 0) {
-                int tags = addTagsToArticle(dynamicTags, article.getId());
-                if (tags == -1) {
-                    return tags;
-                }
-            }
-            return i;
-        } else
-            return chooseId.intValue();
+        }
+        return i;
     }
 
     private int addTagsToArticle(String[] dynamicTags, Long aid) {
@@ -105,16 +109,21 @@ public class ArticleService {
     }
 
     public int updateArticleState(Long[] aids, Integer state) {
-        if (state == 2) {
-            return articleMapper.deleteArticleById(aids);
-        } else {
-            Timestamp editTime = new Timestamp(System.currentTimeMillis());
-            return articleMapper.updateArticleState(aids,editTime, state);//放入到回收站中
-        }
+        Timestamp editTime = new Timestamp(System.currentTimeMillis());
+        return articleMapper.updateArticleState(aids,editTime, state);//修改文章帖子的状态
+    }
+
+    public int deleteArticleById(Long aid) {
+        int i = articleMapper.deleteArticleById(aid);
+        if(i != 0)  //当文章帖子被删除后，对应的回复也需要删除。
+            replyMapper.deleteReplyByAid(aid);
+        return i;
+
     }
 
     public Article getArticleById(Long aid) {
         Article article = articleMapper.getArticleById(aid);
+
         //articleMapper.pvIncrement(aid); //当前用户对当前文章的浏览次数
         return article;
     }

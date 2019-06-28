@@ -23,7 +23,7 @@ public class LoginRegController {
 
     @RequestMapping("/login_error")
     public RespBean loginError() {
-        return RespBean.error( "登录失败!");
+        return RespBean.loginError( "登录失败!");
     }
 
     @RequestMapping("/login_success")
@@ -47,7 +47,7 @@ public class LoginRegController {
      */
     @RequestMapping("/login_page")
     public RespBean loginPage() {
-        return RespBean.error( "尚未登录，请登录!");
+        return RespBean.loginError( "尚未登录，请登录!");
     }
 
     @RequestMapping(value = "/reg",method = RequestMethod.POST)

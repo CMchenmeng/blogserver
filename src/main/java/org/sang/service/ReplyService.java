@@ -46,8 +46,12 @@ public class ReplyService {
         return replyMapper.deleteReplyById(id);
     }
 
-    public int updateReplyState(Reply reply){
-        return replyMapper.updateReplyState(reply);
+    public int deleteReplyByAid(Long aid){
+        return replyMapper.deleteReplyByAid(aid);
+    }
+
+    public int updateReplyState(Long rid,Integer state){
+        return replyMapper.updateReplyState(rid,state);
     }
 
     public int getReplyCountByActicleId(Long aid){
@@ -57,5 +61,9 @@ public class ReplyService {
     public List<Reply> getAllReplyByActicleId(Integer state, Integer page, Integer count,String keywords,Long aid){
         int start = (page - 1) * count;
         return replyMapper.getAllReplyByActicleId(state,start,count,keywords,aid);
+    }
+
+    public Reply getReplyById(Long id){
+        return replyMapper.getReplyById(id);
     }
 }

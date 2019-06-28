@@ -23,7 +23,7 @@ public class NoticeService {
         //处理文通知公告摘要
         if (notice.getSummary() == null || "".equals(notice.getSummary())) {
             //直接截取
-            String stripHtml = stripHtml(notice.getContent());
+            String stripHtml = stripHtml(notice.getHtmlContent());
             notice.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
         }
 
@@ -33,6 +33,7 @@ public class NoticeService {
         notice.setState(1); //默认第一次添加的通知公告可以显示给所有用户  由管理员添加，所以不需要审核
         notice.setPageView(0);
         notice.setIsTop(0);
+        notice.setCid(new Long(1));
         return noticeMapper.addNotice(notice);
     }
 
@@ -49,14 +50,14 @@ public class NoticeService {
         return notice;
     }
 
-    public int getNoticeCountByState(Integer state,Long uid,String keywords){
-        return noticeMapper.getNoticeCountByState(state,uid,keywords);
+    public int getNoticeCountByState(Integer state,String keywords){
+        return noticeMapper.getNoticeCountByState(state,keywords);
     }
 
     public List<Notice> getNoticeByState(Integer state, Integer page, Integer count,String keywords){
         int start = (page - 1) * count;
-        Long uid = Util.getCurrentUser().getId();
-        return noticeMapper.getNoticeByState(state, start, count, uid,keywords);
+        //Long uid = Util.getCurrentUser().getId();
+        return noticeMapper.getNoticeByState(state, start, count, keywords);
     }
 
     public int upNoticeToFirst(Long id,Integer isTop){

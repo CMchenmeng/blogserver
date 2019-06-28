@@ -8,7 +8,7 @@ public class Notice {
     private Long id;
     private String title;
     private String summary;
-    private String content;
+    private String htmlContent;
     private Long cid;
     private Long uid;
     private Timestamp publishTime;
@@ -44,12 +44,12 @@ public class Notice {
         this.summary = summary;
     }
 
-    public String getContent() {
-        return content;
+    public String getHtmlContent() {
+        return htmlContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setHtmlContent(String htmlContent) {
+        this.htmlContent = htmlContent;
     }
 
     public Long getCid() {

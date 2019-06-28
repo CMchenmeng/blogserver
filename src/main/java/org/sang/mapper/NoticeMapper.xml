@@ -7,7 +7,7 @@
         <id column="id" property="id"/>
         <result column="title" property="title"/>
         <result column="summary" property="summary"/>
-        <result column="content" property="content"/>
+        <result column="htmlContent" property="htmlContent"/>
         <result column="cid" property="cid"/>
         <result column="uid" property="uid"/>
         <result column="publishTime" property="publishTime"/>
@@ -24,7 +24,7 @@
     </resultMap>
 
     <insert id="addNotice" parameterType="org.sang.bean.Notice" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO Notice SET title=#{title},summary=#{summary},content=#{content},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},isTop=#{isTop},state=#{state}
+         INSERT INTO Notice SET title=#{title},summary=#{summary},htmlContent=#{htmlContent},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},isTop=#{isTop},state=#{state}
     </insert>
 
     <select id="getNoticeById" parameterType="Long" resultMap="BaseResultMap">
@@ -36,16 +36,13 @@
     <select id="getNoticeByState" resultType="org.sang.bean.Notice">
         SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,a.`isTop`,a.`pageView`,u.`nickname`,a.`cid`,c.`cateName`,a.uid FROM Notice a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
-        <if test="state!=-2">
-            and a.uid=#{uid}
-        </if>
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}
         </if>
         <if test="state==-2">
             and a.state=1
         </if>
-        <if test="keywords!=null">
+        <if test="keywords!=null and keywords!=''">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
         ORDER BY a.isTop DESC, a.editTime DESC limit #{start},#{count};
@@ -57,10 +54,7 @@
             <if test="state!=-1">
                 AND state=#{state}
             </if>
-            <if test="uid!=null">
-                AND uid=#{uid}
-            </if>
-            <if test="keywords!=null">
+            <if test="keywords!=null and keywords!=''">
                 AND title LIKE concat('%',#{keywords},'%')
             </if>
         </where>

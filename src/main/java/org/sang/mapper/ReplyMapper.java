@@ -13,7 +13,11 @@ public interface ReplyMapper {
 
     int deleteReplyById(Long id);
 
-    int updateReplyState(Reply reply);
+    int deleteReplyByAid(Long aid);
+
+    int updateReplyState(Long rid,Integer state);
+
+    Reply getReplyById(@Param("id") Long id);
 
     int getReplyCountByActicleId(@Param("aid") Long aid);
 

@@ -50,7 +50,7 @@ WHERE up.id = #{id}
         <if test="state==-2">
             and a.state=1
         </if>
-        <if test="keywords!=null">
+        <if test="keywords!=null and keywords!=''">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
         ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
@@ -61,7 +61,7 @@ WHERE up.id = #{id}
         <if test="state!=-1">
             AND state=#{state}
         </if>
-        <if test="keywords!=null">
+        <if test="keywords!=null and keywords!=''">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
     </select>
@@ -75,7 +75,7 @@ WHERE up.id = #{id}
         <if test="state==-2">
             and a.state=1
         </if>
-        <if test="keywords!=null">
+        <if test="keywords!=null and keywords!=''">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
         ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
@@ -86,7 +86,7 @@ WHERE up.id = #{id}
         <if test="state!=-1">
             AND state=#{state}
         </if>
-        <if test="keywords!=null">
+        <if test="keywords!=null and keywords!=''">
             AND title LIKE concat('%',#{keywords},'%')
         </if>
     </select>

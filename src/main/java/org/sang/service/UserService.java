@@ -110,4 +110,13 @@ public class UserService implements UserDetailsService {
     public User getUserById(Long id) {
         return userMapper.getUserById(id);
     }
+
+    public int getUserCountByRole(List rids,String keywords){
+        return userMapper.getUserCountByRole(rids,keywords);
+    }
+
+    public List<User> getUserByRole(List rids,Integer page, Integer count,String keywords){
+        int start = (page - 1) * count;
+        return userMapper.getUserByRole(rids,start,count,keywords);
+    }
 }

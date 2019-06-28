@@ -46,6 +46,10 @@ public class RespBean implements Serializable {
         return new RespBean("500", msg, null);
     }
 
+    public static RespBean loginError(String msg){
+        return new RespBean("100", msg, null);
+    }
+
 
     public String getStatus() {
         return status;

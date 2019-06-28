@@ -3,9 +3,11 @@ package org.sang.controller;
 import org.apache.commons.io.IOUtils;
 import org.sang.bean.Article;
 import org.sang.bean.Notice;
+import org.sang.bean.Reply;
 import org.sang.bean.RespBean;
 import org.sang.service.ArticleService;
 import org.sang.service.NoticeService;
+import org.sang.service.ReplyService;
 import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +39,7 @@ public class ArticleController {
                               @RequestParam(value = "page",defaultValue = "1") Integer page,
                               @RequestParam(value = "count", defaultValue = "6") Integer count,
                               String keywords){
-        int totalCount = noticeService.getNoticeCountByState(state, Util.getCurrentUser().getId(),keywords);
+        int totalCount = noticeService.getNoticeCountByState(state, keywords);
         List<Notice> notices = noticeService.getNoticeByState(state, page, count,keywords);
         Map<String, Object> map = new HashMap<>();
         map.put("totalCount", totalCount);
@@ -57,32 +59,65 @@ public class ArticleController {
         }
     }
 
-    //审核员以上权限角色可以对文章帖子进行审核，将状态更改为1   0表示草稿箱待审核，1表示已发表可展示，2表示回收站待删除
+    //审核员以上权限角色可以对文章帖子进行审核，将状态更改为1   0表示草稿箱待审核，1表示已发表可展示
     @RequestMapping(value = "/updateArticleState", method = RequestMethod.PUT)
     public  RespBean updateArticleStateById(Long[] aids, Integer state){
         if(aids.length == 0 || aids == null)
             return RespBean.error("输入的文章帖子id为空，请重新输入");
-        if(state==null ||state < 0 || state > 2 )
+        if(state != 0 && state != 1 )
             return RespBean.error("输入文章帖子的state值有误");
-        int result = articleService.updateArticleState(aids,state);
-        if(result == 1)
-            return RespBean.ok("文章帖子状态已修改！");
-        return  RespBean.error("修改文章帖子状态失败！");
+        if(Util.isShenhe()){
+            int result = articleService.updateArticleState(aids,state);
+            if(result == 1)
+                return RespBean.ok("文章帖子状态已修改！");
+            return  RespBean.error("修改文章帖子状态失败！");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
+    }
+
+    @RequestMapping(value = "/deleteArticle", method = RequestMethod.PUT)
+    public  RespBean deleteArticleById(Long aid){
+        if(aid == null)
+            return RespBean.error("输入的文章帖子id为空，请重新输入");
+        if(Util.isShenhe()){
+            int result = articleService.deleteArticleById(aid);
+            if(result == 1)
+                return RespBean.ok("文章帖子已删除！");
+            return  RespBean.error("删除文章帖子失败！");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
 
     @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
-    public RespBean addNewArticle(Article article,Integer chooseId) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+    public RespBean addArticle(Article article) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
         if(article == null)
             return RespBean.error("文章帖子内容为空，请选择正确的操作！");
-        if(chooseId != 0 && chooseId != 1)
-            return RespBean.error("添加/修改文章帖子的操作选项有误");
-        int result = articleService.addNewArticle(article,chooseId);  //chooseId=1为添加操作，=0的为更改操作
+        int result = articleService.addArticle(article);  //chooseId=1为添加操作，=0的为更改操作
         if (result == 1) {
             return RespBean.ok("更新/发表文章帖子成功");
         } else {
             return RespBean.ok("更新/发表文章帖子失败!");
         }
     }
+
+    //更新文章帖子的内容，帖子的创作者进行更改
+    @RequestMapping(value = "/updateArticle", method = RequestMethod.POST)
+    public RespBean updateArticle(Article article) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+        if(article == null)
+            return RespBean.error("文章帖子内容为空，请选择正确的操作！");
+        if(Util.getCurrentUser().getId() == article.getUid()){
+            int result = articleService.updateArticle(article);
+            if (result == 1) {
+                return RespBean.ok("更新/发表文章帖子成功");
+            } else {
+                return RespBean.ok("更新/发表文章帖子失败!");
+            }
+        }else
+            return RespBean.error("您不是当前文章帖子的创作者，不可以进行修改");
+
+    }
+
+
 
     /**
      * 上传图片
@@ -132,11 +167,14 @@ public class ArticleController {
     //置顶操作
     @RequestMapping(value = "/updateArticleTop",method = RequestMethod.POST)
     public RespBean updateArticleTop(Long aid,Integer isTop){
-        int i = articleService.updateArticleTop(aid,isTop);
-        if (i == 1) {
-            return new RespBean("success", "文章帖子设置/取消置顶操作成功!");
-        }
-        return new RespBean("error", "文章帖子设置/取消置顶操作失败!");
+        if(Util.isShenhe()){
+            int i = articleService.updateArticleTop(aid,isTop);
+            if (i == 1) {
+                return new RespBean("success", "文章帖子设置/取消置顶操作成功!");
+            }
+            return new RespBean("error", "文章帖子设置/取消置顶操作失败!");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
 
     @RequestMapping(value = "/getArticleById", method = RequestMethod.GET)
