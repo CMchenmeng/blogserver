@@ -94,4 +94,8 @@ WHERE up.id = #{id}
     <update id="upFileToFirst" parameterType="org.sang.bean.upFile">
         UPDATE upfile SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
     </update>
+
+    <update id="downIncrement" parameterType="Long">
+        UPDATE upfile set downNumber=downNumber+1 WHERE id=#{fid}
+    </update>
 </mapper>

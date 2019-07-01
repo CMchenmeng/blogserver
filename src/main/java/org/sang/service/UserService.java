@@ -115,8 +115,8 @@ public class UserService implements UserDetailsService {
         return userMapper.getUserCountByRole(rids,keywords);
     }
 
-    public List<User> getUserByRole(List rids,Integer page, Integer count,String keywords){
+    public List<User> getUserByRole(List rids,Integer page,Integer chooseId, Integer count,String keywords){
         int start = (page - 1) * count;
-        return userMapper.getUserByRole(rids,start,count,keywords);
+        return userMapper.getUserByRole(rids,chooseId,start,count,keywords);
     }
 }

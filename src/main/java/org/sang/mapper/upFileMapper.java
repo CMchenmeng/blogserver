@@ -31,4 +31,6 @@ public interface upFileMapper {
     int getupFileCountByStateAndcid(@Param("state") Integer state, @Param("keywords") String keywords, @Param("cid") Long cid);
 
     int upFileToFirst(@Param("id") Long id,@Param("editTime")Timestamp editTime,@Param("isTop") Integer isTop);
+
+    void downIncrement(@Param("fid") Long fid);
 }

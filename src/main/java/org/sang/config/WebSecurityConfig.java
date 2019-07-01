@@ -107,6 +107,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout().permitAll()
                 .and().csrf().disable().exceptionHandling()
                 .accessDeniedHandler(getAccessDeniedHandler());
+
+        //以下这句就可以控制单个用户只能创建一个session，也就只能在服务器登录一次
+        http.sessionManagement().maximumSessions(1).expiredUrl("/login");
     }
 
     @Override

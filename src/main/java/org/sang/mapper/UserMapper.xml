@@ -29,7 +29,8 @@
     </select>
     
     <select id="getUserCountByRole" resultType="int">
-        SELECT count(*) FROM user u inner join roles_user ru on u.id=ru.uid WHERE ru.rid IN
+        SELECT count(*)  FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
+        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1) and ru.`rid` IN
         <foreach collection="rids" item="rid" separator="," open="(" close=")">
             #{rid}
         </foreach>
@@ -38,15 +39,18 @@
         </if>
     </select>
 
-    <select id="getUserByRole" resultType="org.sang.bean.User">
-        SELECT u.*  FROM user u inner join roles_user ru on u.id=ru.uid WHERE ru.rid IN
-        <foreach collection="rids" item="rid" separator="," open="(" close=")">
-            #{rid}
-        </foreach>
-        <if test="keywords!=null and keywords!=''">
-            AND nickname LIKE concat('%',#{keywords},'%')
-        </if>
-        ORDER BY u.regTime DESC limit #{start},#{count};
+    <select id="getUserByRole" resultMap="BaseResultMap">
+        SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
+        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
+        <choose>
+            <when test="keywords!=null and keywords!=''">
+                and u.nickname like concat('%',#{keywords},'%') ORDER BY u.`id`
+            </when>
+            <otherwise>
+                ORDER BY  u.`id` DESC limit #{start},#{count};
+            </otherwise>
+        </choose>
+
     </select>
 
     <select id="getUserById" resultMap="BaseResultMap">

@@ -69,4 +69,8 @@ public class upFileService {
         Timestamp editTime = new Timestamp(System.currentTimeMillis());
         return upfileMapper.upFileToFirst(id,editTime,isTop);
     }
+
+    public void downIncrement(Long fid) {
+        upfileMapper.downIncrement(fid);
+    }
 }

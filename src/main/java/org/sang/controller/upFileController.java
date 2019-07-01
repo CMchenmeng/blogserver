@@ -39,8 +39,7 @@ public class upFileController {
         return RespBean.error("获取类别的id有误，请检查重新输入!");
     }
 
-    //Id =1代表获取法律法规类别的所有文件   20 < Id < 35的所有category
-    //Id =2代表获取学习资料类别的所有文件   36 < Id  < 50的所有category
+    //type=1 代表查询法律法规文件  type=2 代表查询学习资料文件
     @RequestMapping(value = "/allUpfile", method = RequestMethod.GET)
     public RespBean getupFileByState(@RequestParam(value = "state",defaultValue = "1") Integer state,
                                      @RequestParam(value = "page",defaultValue = "1") Integer page,

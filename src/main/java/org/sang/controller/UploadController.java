@@ -15,10 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 //上传文件
 @RestController
@@ -31,10 +28,9 @@ public class UploadController {
     @Value("${prop.upload-folder}")
     private String FILE_PATH_PERFIX;
 
-
-
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
    // public final static String filePath = "static/upload/docFile";
+
 
     public File getFilepath(){
         String filePath = new String("./"+FILE_PATH_PERFIX);;
@@ -84,7 +80,7 @@ public class UploadController {
             //上传成功后同时将路径更新进数据库   （suid、editTime）
             upFile upfile = new upFile();
             upfile.setTitle(title);
-            upfile.setPath(uploadFilePath.toString());
+            upfile.setPath(uploadFilePath.toString());   //
             upfile.setRemark(remark);
             upfile.setCid(cid);
             upfile.setUid(Util.getCurrentUser().getId());
@@ -95,12 +91,12 @@ public class UploadController {
 
             int result = upfileService.addupFile(upfile);
             if(result==1)
-                return new RespBean("success", "文件上传成功! 文件url="+url.toString());
+                return RespBean.ok("文件上传成功! 文件url="+url.toString());
             else
-                return new RespBean("error", "文件上传成功,更新数据库失败！");
+                return RespBean.error("文件上传成功,更新数据库失败！");
         } catch (IOException e) {
             e.printStackTrace();
-            return  new RespBean("error","后端异常...");
+            return  RespBean.error("后端异常...");
         }
     }
 /*
@@ -160,10 +156,10 @@ public class UploadController {
                     stream.close();
                 } catch (Exception e) {
                     stream = null;
-                    return new RespBean("error", "第 " + i + " 个文件上传失败 ==> " + e.getMessage());
+                    return RespBean.error("第 " + i + " 个文件上传失败 ==> " + e.getMessage());
                 }
             } else {
-                return new RespBean("error","第 " + i + " 个文件上传失败因为文件为空");
+                return RespBean.error("第 " + i + " 个文件上传失败因为文件为空");
             }
         }
         return new RespBean("success", "批量上传成功");
@@ -172,14 +168,27 @@ public class UploadController {
     @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
     public Object downloadFile(HttpServletRequest request, HttpServletResponse response,Long id) {
         upFile upfile = upfileService.getupFileById(id);
-
         String fileName = upfile.getPath();  // "1.txt";// 文件名
+
+        Map<String, Object> map = new HashMap<>();
+        StringBuffer url = new StringBuffer();
+        url.append(request.getScheme())
+                .append("://")
+                .append(request.getServerName())
+                .append(":")
+                .append(request.getServerPort())
+                .append(request.getContextPath())
+                .append(fileName.substring(0,17));
+
+        System.out.println("url:  "+url);
+        url.append(fileName.substring(17));
+        map.put("url", url);
         if (upfile != null) {
             //设置文件路径
             /*File fileDir = getFilepath();
             File file = new File(fileDir.getAbsolutePath()+File.separator +upfile.getPath());*/
 
-            System.out.println("fileName.substring(0,17): "+fileName.substring(0,17));///docfile/20190622
+            System.out.println("fileName.substring(0,17): "+fileName.substring(0,17));// /docfile/20190622
             System.out.println("fileName.substring(17): "+fileName.substring(17));  //\da840290-86dd-4f8c-a2e3-1bb8b9ee319d_1.txt
 
             String fileFolderPath = request.getServletContext().getRealPath(fileName.substring(0,17));
@@ -190,10 +199,10 @@ public class UploadController {
 
             System.out.println("filePath:  "+file.getAbsolutePath());
             if (file.exists()) {
-               /* response.setContentType("application/force-download");// 设置强制下载不打开
-                response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名*/
-                response.setContentType("multipart/form-data");
-                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(17)); //fileName.substring(17)
+                response.setContentType("application/force-download");// 设置强制下载不打开
+               // response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名*/
+               // response.setContentType("multipart/form-data");
+                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(fileName.lastIndexOf("_"+1))); //fileName.substring(17)
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
@@ -206,7 +215,8 @@ public class UploadController {
                         os.write(buffer, 0, i);
                         i = bis.read(buffer);
                     }
-                    return new RespBean("success", "文件下载成功");
+                    upfileService.downIncrement(id);  //更新该文件的下载次数
+                    return RespBean.ok( "文件下载成功",map);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -227,6 +237,6 @@ public class UploadController {
                 }
             }
         }
-        return  new RespBean("error","文件下载失败...");
+        return  RespBean.error("文件下载失败...");
     }
 }
