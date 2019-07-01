@@ -95,9 +95,8 @@ public class UserManaController {
         if(role.contains("审核人员") ){
             List<Long> rids = new ArrayList<Long>();
             rids.add(new Long(2));
-            Integer chooseId = null;
             int totalCount = userService.getUserCountByRole(rids,keywords);
-            List<User> users = userService.getUserByRole(rids, page,chooseId, count,keywords);
+            List<User> users = userService.getUserByRole(rids, page, count,keywords);
             Map<String, Object> map = new HashMap<>();
             map.put("totalCount", totalCount);
             map.put("users", users);
@@ -107,10 +106,9 @@ public class UserManaController {
             rids.add(new Long(3));
             rids.add(new Long(4));
             rids.add(new Long(5));
-            Integer chooseId = new Integer(2);
             int totalCount = userService.getUserCountByRole(rids,keywords);
             System.out.println("totalCount:   "+ totalCount);
-            List<User> users = userService.getUserByRole(rids, page,chooseId, count,keywords);
+            List<User> users = userService.getUserByRole(rids, page, count,keywords);
             Map<String, Object> map = new HashMap<>();
             map.put("totalCount", totalCount);
             map.put("users", users);

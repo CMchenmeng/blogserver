@@ -38,5 +38,5 @@ public interface UserMapper {
 
     int getUserCountByRole(@Param("rids") List rids,@Param("keywords") String keywords);
 
-    List<User> getUserByRole(@Param("rids") List rids,@Param("chooseId") Integer chooseId, @Param("start") Integer start, @Param("count") Integer count,@Param("keywords") String keywords);
+    List<User> getUserByRole(@Param("rids") List rids,@Param("start") Integer start, @Param("count") Integer count,@Param("keywords") String keywords);
 }
