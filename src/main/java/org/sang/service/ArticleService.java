@@ -52,13 +52,22 @@ public class ArticleService {
         return i;
     }
 
-    public int addArticle(Article article) {
+    public int addArticle(String title,String htmlContent,Long cid) {
         //添加操作
+        Article article = new Article();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        article.setTitle(title);
+        article.setHtmlContent(htmlContent);
+        article.setCid(cid);
         //设置发表日期
         article.setPublishTime(timestamp);
         //设置当前用户
         article.setUid(Util.getCurrentUser().getId());
+        //处理文章摘要 //直接截取
+        String stripHtml = stripHtml(htmlContent);
+        article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
+
         article.setState(0);
         article.setIsTop(0);
         article.setPageView(0);
@@ -106,6 +115,16 @@ public class ArticleService {
 
     public int getArticleCountByState(Integer state,String keywords) {
         return articleMapper.getArticleCountByState(state,keywords);
+    }
+
+    public int getArticleCountByUserAndState(Integer state,Long uid,String keywords) {
+        return articleMapper.getArticleCountByUserAndState(state,uid,keywords);
+    }
+
+    public List<Article> getArticleByUserAndState(Integer state, Integer page, Integer count,Long uid,String keywords) {
+        int start = (page - 1) * count;
+        //Long uid = Util.getCurrentUser().getId();
+        return articleMapper.getArticleByUserAndState(state, start, count,uid,keywords);
     }
 
     public int updateArticleState(Long[] aids, Integer state) {

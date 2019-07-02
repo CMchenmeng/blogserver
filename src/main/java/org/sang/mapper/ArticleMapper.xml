@@ -19,14 +19,32 @@
         <if test="state==1">
             ,state=1
         </if>
-        <if test="publishDate!=null">
-            ,publishDate=#{publishDate}
+        <if test="publishTime!=null">
+            ,publishTime=#{publishTime}
         </if>
         WHERE id=#{id}
     </update>
     <select id="getArticleByState" resultType="org.sang.bean.Article">
         SELECT a.id,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
+        <!--<if test="state!=-2">
+            and a.uid=#{uid}
+        </if>-->
+        <if test="state!=-1 and state!=-2">
+            and a.state=#{state}
+        </if>
+        <if test="state==-2">
+            and a.state=1
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
+    </select>
+
+    <select id="getArticleByUserAndState" resultType="org.sang.bean.Article">
+        SELECT a.id,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and a.uid=#{uid}
         <!--<if test="state!=-2">
             and a.uid=#{uid}
         </if>-->
@@ -59,6 +77,15 @@
                 AND title LIKE concat('%',#{keywords},'%')
             </if>
         </where>
+    </select>
+    <select id="getArticleCountByUserAndState" resultType="int">
+        SELECT count(*) FROM article where uid=#{uid}
+        <if test="state!=-1">
+            AND state=#{state}
+        </if>
+        <if test="keywords!=null">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
     </select>
     <update id="updateArticleState">
         UPDATE article SET state=#{state},editTime=#{editTime} WHERE id IN

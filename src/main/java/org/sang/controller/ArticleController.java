@@ -8,6 +8,7 @@ import org.sang.bean.RespBean;
 import org.sang.service.ArticleService;
 import org.sang.service.NoticeService;
 import org.sang.service.ReplyService;
+import org.sang.service.UserService;
 import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,31 @@ public class ArticleController {
         }
     }
 
+    @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
+    public RespBean addArticle(String title,String htmlContent,Long cid) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+        if(title == null || title == "" || htmlContent == null || htmlContent =="" || cid == null || cid.intValue() < 0 || cid.intValue() > 100)
+            return RespBean.error("文章帖子输入内容为空或不完整，请检查后选择正确的操作！");
+        int result = articleService.addArticle(title,htmlContent,cid);  //chooseId=1为添加操作，=0的为更改操作
+        if (result == 1) {
+            return RespBean.ok("更新/发表文章帖子成功");
+        } else {
+            return RespBean.ok("更新/发表文章帖子失败!");
+        }
+    }
+
+    @RequestMapping(value = "/deleteArticle", method = RequestMethod.PUT)
+    public  RespBean deleteArticleById(Long aid){
+        if(aid == null)
+            return RespBean.error("输入的文章帖子id为空，请重新输入");
+        if(Util.isShenhe()){
+            int result = articleService.deleteArticleById(aid);
+            if(result == 1)
+                return RespBean.ok("文章帖子已删除！");
+            return  RespBean.error("删除文章帖子失败！");
+        }else
+            return RespBean.error("你的权限不足，请联系管理员修改权限");
+    }
+
     //审核员以上权限角色可以对文章帖子进行审核，将状态更改为1   0表示草稿箱待审核，1表示已发表可展示
     @RequestMapping(value = "/updateArticleState", method = RequestMethod.PUT)
     public  RespBean updateArticleStateById(Long[] aids, Integer state){
@@ -75,37 +101,15 @@ public class ArticleController {
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
 
-    @RequestMapping(value = "/deleteArticle", method = RequestMethod.PUT)
-    public  RespBean deleteArticleById(Long aid){
-        if(aid == null)
-            return RespBean.error("输入的文章帖子id为空，请重新输入");
-        if(Util.isShenhe()){
-            int result = articleService.deleteArticleById(aid);
-            if(result == 1)
-                return RespBean.ok("文章帖子已删除！");
-            return  RespBean.error("删除文章帖子失败！");
-        }else
-            return RespBean.error("你的权限不足，请联系管理员修改权限");
-    }
-
-    @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
-    public RespBean addArticle(Article article) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
-        if(article == null)
-            return RespBean.error("文章帖子内容为空，请选择正确的操作！");
-        int result = articleService.addArticle(article);  //chooseId=1为添加操作，=0的为更改操作
-        if (result == 1) {
-            return RespBean.ok("更新/发表文章帖子成功");
-        } else {
-            return RespBean.ok("更新/发表文章帖子失败!");
-        }
-    }
-
     //更新文章帖子的内容，帖子的创作者进行更改
     @RequestMapping(value = "/updateArticle", method = RequestMethod.POST)
-    public RespBean updateArticle(Article article) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
-        if(article == null)
-            return RespBean.error("文章帖子内容为空，请选择正确的操作！");
-        if(Util.getCurrentUser().getId() == article.getUid()){
+    public RespBean updateArticle(String title,String htmlContent,Long aid) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+        if(title == null || title == ""  || htmlContent == null || htmlContent =="" || aid==null)
+            return RespBean.error("文章帖子输入内容为空或不完整，请检查后选择正确的操作！");
+        Article article = articleService.getArticleById(aid);
+        if(Util.getCurrentUser().getId() == article.getUid() ){
+            article.setTitle(title);
+            article.setHtmlContent(htmlContent);
             int result = articleService.updateArticle(article);
             if (result == 1) {
                 return RespBean.ok("更新/发表文章帖子成功");
@@ -114,11 +118,7 @@ public class ArticleController {
             }
         }else
             return RespBean.error("您不是当前文章帖子的创作者，不可以进行修改");
-
     }
-
-
-
     /**
      * 上传图片
      *
@@ -203,5 +203,19 @@ public class ArticleController {
         return map;
     }
 
+
+    //根据当前用户获取其已发表的文章帖子
+    @RequestMapping(value = "/getArticleByCurrentUser",method = RequestMethod.GET)
+    public RespBean getArticleByCurrerntUser(@RequestParam(value = "state", defaultValue = "0") Integer state,
+                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(value = "count", defaultValue = "10") Integer count,
+                                    String keywords){
+        int totalCount = articleService.getArticleCountByUserAndState(state,Util.getCurrentUser().getId(),keywords);
+        List<Article> articles = articleService.getArticleByUserAndState(state, page, count,Util.getCurrentUser().getId(),keywords);
+        Map<String, Object> map = new HashMap<>();
+        map.put("totalCount", totalCount);
+        map.put("articles", articles);
+        return RespBean.ok("获取当前用户发表的文章帖子成功",map);
+    }
 
 }
