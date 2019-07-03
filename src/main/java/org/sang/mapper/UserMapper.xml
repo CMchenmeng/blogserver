@@ -30,10 +30,13 @@
     
     <select id="getUserCountByRole" resultType="int">
         SELECT count(*)  FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
-        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1) and ru.`rid` IN
-        <foreach collection="rids" item="rid" separator="," open="(" close=")">
-            #{rid}
-        </foreach>
+        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
+         <if test="rids!=null">
+             and ru.`rid` IN
+              <foreach collection="rids" item="rid" separator="," open="(" close=")">
+               #{rid}
+              </foreach>
+         </if>
         <if test="keywords!=null and keywords!=''">
             AND nickname LIKE concat('%',#{keywords},'%')
         </if>
@@ -42,10 +45,13 @@
     <select id="getUserByRole" resultMap="BaseResultMap">
         SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
         r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
-        AND u.id IN (SELECT	u.id FROM USER u,roles_user ru	WHERE u.`id` = ru.`uid`	AND ru.rid  in
-        <foreach collection="rids" item="rid" separator="," open="(" close=")">
-            #{rid}
-        </foreach>)
+        AND u.id IN (SELECT	u.id FROM USER u,roles_user ru	WHERE u.`id` = ru.`uid`
+        <if test="rids!=null">
+            and ru.`rid` IN
+            <foreach collection="rids" item="rid" separator="," open="(" close=")">
+                #{rid}
+            </foreach>
+        </if>)
         <choose>
             <when test="keywords!=null and keywords!=''">
                 and u.nickname like concat('%',#{keywords},'%') ORDER BY u.`id`

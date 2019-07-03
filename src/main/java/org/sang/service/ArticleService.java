@@ -29,10 +29,12 @@ public class ArticleService {
     TagsMapper tagsMapper;
 
     public int updateArticle(Article article) {
+        //将html转换为纯文本
+        String mdContent = Util.delHTMLTag(article.getHtmlContent());
         //处理文章摘要
         if (article.getSummary() == null || "".equals(article.getSummary())) {
             //直接截取
-            String stripHtml = stripHtml(article.getHtmlContent());
+            String stripHtml = stripHtml(mdContent);
             article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
         }
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -64,11 +66,14 @@ public class ArticleService {
         article.setPublishTime(timestamp);
         //设置当前用户
         article.setUid(Util.getCurrentUser().getId());
+       //将html转换为纯文本
+        String mdContent = Util.delHTMLTag(htmlContent);
+        article.setMdContent(mdContent);
         //处理文章摘要 //直接截取
-        String stripHtml = stripHtml(htmlContent);
+        String stripHtml = stripHtml(mdContent);
         article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
 
-        article.setState(0);
+        article.setState(1);
         article.setIsTop(0);
         article.setPageView(0);
         int i = articleMapper.addNewArticle(article);

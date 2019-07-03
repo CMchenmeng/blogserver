@@ -22,10 +22,10 @@ public class NoticeController {
     NoticeService noticeService;
 
     @RequestMapping(value = "/addNotice",method = RequestMethod.POST)
-    public RespBean addNotice(Notice notice){
-        if(notice == null)
-            return RespBean.error("添加的通知公告内容为空！");
-        int result = noticeService.addNotice(notice);
+    public RespBean addNotice(String title,String htmlContent,Long cid){
+        if(title == null || title == "" || htmlContent == null || htmlContent =="" || cid == null || cid.intValue() < 0 || cid.intValue() > 100)
+            return RespBean.error("添加的通知公告内容为空或不完整，请检查后选择正确的操作！");
+        int result = noticeService.addNotice(title,htmlContent,cid);
         if(result==1)
             return RespBean.ok("success", "添加通知公告成功!");
         return  RespBean.error("添加通知公告失败!");

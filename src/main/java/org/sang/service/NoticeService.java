@@ -18,14 +18,18 @@ public class NoticeService {
     NoticeMapper noticeMapper;
 
 
-    public int addNotice(Notice notice){
+    public int addNotice(String title,String htmlContent,Long cid){
 
-        //处理文通知公告摘要
-        if (notice.getSummary() == null || "".equals(notice.getSummary())) {
-            //直接截取
-            String stripHtml = stripHtml(notice.getHtmlContent());
-            notice.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
-        }
+        Notice notice = new Notice();
+        notice.setTitle(title);
+        notice.setHtmlContent(htmlContent);
+        notice.setCid(cid);
+
+        //将html转换为纯文本
+        String mdContent = Util.delHTMLTag(htmlContent);
+        //处理文通知公告摘要   直接截取
+        String stripHtml = stripHtml(mdContent);
+        notice.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
 
         notice.setPublishTime(new Timestamp(System.currentTimeMillis()));
         notice.setEditTime(new Timestamp(System.currentTimeMillis()));  //由于业务逻辑时按照修改时间进行排序，所有新添加的通知公告赋初值

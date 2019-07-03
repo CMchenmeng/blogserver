@@ -202,7 +202,7 @@ public class UploadController {
                 response.setContentType("application/force-download");// 设置强制下载不打开
                // response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名*/
                // response.setContentType("multipart/form-data");
-                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(fileName.lastIndexOf("_"+1))); //fileName.substring(17)
+                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(fileName.lastIndexOf("_")+1)); //fileName.substring(17)
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;

@@ -61,7 +61,7 @@ public class ArticleController {
     }
 
     @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
-    public RespBean addArticle(String title,String htmlContent,Long cid) {   //0代表更新文章帖子操作，1代表添加文章帖子操作
+    public RespBean addArticle(String title,String htmlContent,Long cid) {
         if(title == null || title == "" || htmlContent == null || htmlContent =="" || cid == null || cid.intValue() < 0 || cid.intValue() > 100)
             return RespBean.error("文章帖子输入内容为空或不完整，请检查后选择正确的操作！");
         int result = articleService.addArticle(title,htmlContent,cid);  //chooseId=1为添加操作，=0的为更改操作

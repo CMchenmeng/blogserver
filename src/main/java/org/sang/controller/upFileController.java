@@ -83,10 +83,10 @@ public class upFileController {
         if(state==null ||state < 0 || state > 2 )
             return RespBean.error("输入相关文件的state值有误");
         if(Util.isShenhe()){
-            int result = upfileService.updateUpFileState(ids,state);
-            if(result != 0)
-                return RespBean.ok("文件的状态已修改！");
-            return  RespBean.error("修改文件状态失败！");
+            String result = upfileService.updateUpFileState(ids,state);
+            if(result != null)
+                return RespBean.ok(result);
+            return  RespBean.error(result);
         }else
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }

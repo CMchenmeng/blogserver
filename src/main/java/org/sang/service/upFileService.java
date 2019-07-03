@@ -27,14 +27,20 @@ public class upFileService {
         return upfile;
     }
 
-    public int updateUpFileState(Long[] ids,Integer state) {
+    public String updateUpFileState(Long[] ids,Integer state) {
+        String result = null;
         if (state == 2) {
-            return upfileMapper.deleteUpFileById(ids);
-        } else {
+            if (upfileMapper.deleteUpFileById(ids) != 0)
+                result = "文件资料已删除！";
+        }
+        if (state != 2) {
             Timestamp editTime = new Timestamp(System.currentTimeMillis());
             Long suid = Util.getCurrentUser().getId();
-            return upfileMapper.updateUpFileState(ids,editTime,suid,state);//放入到回收站中
+            if (upfileMapper.updateUpFileState(ids, editTime, suid, state) != 0) {
+                result = "文件资料状态已更改！";
+            }
         }
+        return result;
     }
 
     public List<upFile> getupFileByState(Integer state, Integer page, Integer count, Integer type ,String keywords){

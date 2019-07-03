@@ -4,6 +4,7 @@ import org.sang.bean.RespBean;
 import org.sang.bean.Role;
 import org.sang.bean.User;
 import org.sang.service.UserService;
+import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,12 +46,12 @@ public class UserManaController {
         return RespBean.error("获取角色信息失败！");
     }
 
-    @RequestMapping(value = "/user/enabled", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user/enabled", method = RequestMethod.GET)
     public RespBean updateUserEnabled(Boolean enabled, Long uid) {
         if (userService.updateUserEnabled(enabled, uid) == 1) {
-            return RespBean.ok("更新成功!");
+            return RespBean.ok("启用/禁用用户成功!");
         } else {
-            return RespBean.error("更新失败!");
+            return RespBean.error("启用/禁用用户失败!");
         }
     }
 
@@ -78,12 +79,12 @@ public class UserManaController {
         }
     }
 
-    @RequestMapping(value = "/user/role", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user/updateRole", method = RequestMethod.GET)
     public RespBean updateUserRoles(Long[] rids, Long id) {
         if (userService.updateUserRoles(rids, id) == rids.length) {
-            return RespBean.ok( "更新成功!");
+            return RespBean.ok( "更新用户角色成功!");
         } else {
-            return RespBean.error("更新失败!");
+            return RespBean.error("更新用户角色失败!");
         }
     }
 
@@ -92,7 +93,16 @@ public class UserManaController {
     public RespBean getUserByRole(@RequestParam(value = "page",defaultValue = "1") Integer page,
                                   @RequestParam(value = "count", defaultValue = "6") Integer count,
                                   String keywords,String role){
-        if(role.contains("审核人员") ){
+        if(role.contains("全部用户")){
+            List<Long> rids = null;
+            int totalCount = userService.getUserCountByRole(rids, keywords);
+            List<User> users = userService.getUserByRole(rids, page, count, keywords);
+            Map<String, Object> map = new HashMap<>();
+            map.put("totalCount", totalCount);
+            map.put("users", users);
+            return RespBean.ok("获取全部用户成功", map);
+        }
+        else if(role.contains("审核人员") ){
             List<Long> rids = new ArrayList<Long>();
             rids.add(new Long(2));
             int totalCount = userService.getUserCountByRole(rids,keywords);
