@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sang.mapper.DailyRoutineMapper">
+    <resultMap id="BaseResultMap" type="org.sang.bean.DailyRoutine">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="path" property="path"/>
+        <result column="remark" property="remark"/>
+        <result column="cid" property="cid"/>
+        <result column="uid" property="uid"/>
+        <result column="uploadTime" property="uploadTime"/>
+        <result column="editTime" property="editTime"/>
+        <result column="pageView" property="pageView"/>
+        <result column="state" property="state"/>
+        <result column="isTop" property="isTop"/>
+    </resultMap>
+
+    <insert id="addDailyRoutine" parameterType="org.sang.bean.DailyRoutine" useGeneratedKeys="true" keyProperty="id">
+         INSERT INTO dailyRoutine SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},isTop=#{isTop},downNumber=#{downNumber}
+    </insert>
+
+    <select id="getDailyRoutineById" parameterType="Long" resultMap="BaseResultMap">
+    SELECT	dr.*,u.`nickname`,c.`cateName` FROM	dailyRoutine dr
+    LEFT JOIN USER u ON dr.`uid` = u.`id` LEFT JOIN category c ON dr.`cid` = c.`id`
+WHERE dr.id = #{id}
+    </select>
+
+    <delete id="deleteDailyRoutineById">
+        DELETE FROM dailyRoutine WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateDailyRoutineState">
+        UPDATE dailyRoutine SET state=#{state},editTime=#{editTime},suid=#{suid} WHERE id IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getDailyRoutineByState" resultType="org.sang.bean.DailyRoutine">
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,a.`cid`,a.`isTop`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM dailyRoutine a,user
+        u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid =#{cid}
+        <if test="state!=-1 and state!=-2">
+            and a.state=#{state}
+        </if>
+        <if test="state==-2">
+            and a.state=1
+        </if>
+        <if test="keywords!=null and keywords!=''">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
+    </select>
+
+    <select id="getDailyRoutineCountByState" resultType="int">
+        SELECT count(*) FROM dailyRoutine where 1=1 and cid =#{cid}
+        <if test="state!=-1">
+            AND state=#{state}
+        </if>
+        <if test="keywords!=null and keywords!=''">
+            AND title LIKE concat('%',#{keywords},'%')
+        </if>
+    </select>
+
+    <update id="DailyRoutineToFirst" parameterType="org.sang.bean.DailyRoutine">
+        UPDATE dailyRoutine SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
+    </update>
+
+    <update id="downIncrement" parameterType="Long">
+        UPDATE dailyRoutine set downNumber=downNumber+1 WHERE id=#{fid}
+    </update>
+</mapper>
