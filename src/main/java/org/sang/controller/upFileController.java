@@ -84,9 +84,9 @@ public class upFileController {
             return RespBean.error("输入相关文件的state值有误");
         if(Util.isShenhe()){
             String result = upfileService.updateUpFileState(ids,state);
-            if(result != null)
+            if(result != null && result.length() != 0)
                 return RespBean.ok(result);
-            return  RespBean.error(result);
+            return  RespBean.error("后台没有对相应资料状态进行处理，请检查传入的ids是否正确！");
         }else
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
@@ -94,6 +94,8 @@ public class upFileController {
     //置顶操作
     @RequestMapping(value = "/updateUpfileTop",method = RequestMethod.GET)
     public RespBean upFileToFirst(Long id,Integer isTop){
+        if(isTop.intValue()<0 || isTop.intValue() >1)
+            return RespBean.error("输入的isTop值有误！请检查后重新输入");
         if(Util.isShenhe()){
             int i = upfileService.upFileToFirst(id,isTop);
             if (i == 1) {

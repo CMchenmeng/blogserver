@@ -50,6 +50,8 @@ public class UploadController {
         if(Objects.isNull(file) || file.isEmpty()){
             return new RespBean("error", "文件为空，添加文件失败!");
         }
+        if(title == null ||title.length() ==0)
+            return RespBean.error("输入文件的标题为空，请重新输入！");
 
         StringBuffer url = new StringBuffer();
         StringBuffer uploadFilePath = new StringBuffer();
