@@ -29,37 +29,39 @@ public class UploadController {
     private String FILE_PATH_PERFIX;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-   // public final static String filePath = "static/upload/docFile";
+    // public final static String filePath = "static/upload/docFile";
 
 
-    public File getFilepath(){
-        String filePath = new String("./"+FILE_PATH_PERFIX);;
+    public File getFilepath() {
+        String filePath = new String("./" + FILE_PATH_PERFIX);
+        ;
         File fileDir = new File(filePath);
-        if(!fileDir.exists()){
+        if (!fileDir.exists()) {
             // 递归生成文件夹
             fileDir.mkdirs();
         }
         return fileDir;
     }
+
     //法律法规，学习资料的新增上传功能
-    @RequestMapping(value="/uploadsingleFile",method = RequestMethod.POST)
-    public Object singleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file,
+    @RequestMapping(value = "/uploadsingleFile", method = RequestMethod.POST)
+    public Object singleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                                    @RequestParam("cid") Long cid,
                                    @RequestParam("title") String title,
-                                   @RequestParam("remark") String remark){
-        if(Objects.isNull(file) || file.isEmpty()){
+                                   @RequestParam("remark") String remark) {
+        if (Objects.isNull(file) || file.isEmpty()) {
             return new RespBean("error", "文件为空，添加文件失败!");
         }
-        if(title == null ||title.length() ==0)
+        if (title == null || title.length() == 0)
             return RespBean.error("输入文件的标题为空，请重新输入！");
 
         StringBuffer url = new StringBuffer();
         StringBuffer uploadFilePath = new StringBuffer();
-        String filePath = new String(FILE_PATH_PERFIX+ sdf.format(new Date()));
-        System.out.println("filePath: "+filePath);
-        String fileFolderPath = request.getServletContext().getRealPath(filePath);
-        System.out.println("fileFolderPath: "+fileFolderPath);
-        File fileFolder = new File(fileFolderPath);
+        String filePath = new String(FILE_PATH_PERFIX + sdf.format(new Date()));
+        System.out.println("filePath: " + filePath);
+        // String fileFolderPath = request.getServletContext().getRealPath(filePath);
+        //System.out.println("fileFolderPath: "+fileFolderPath);
+        File fileFolder = new File(filePath);
         if (!fileFolder.exists()) {
             fileFolder.mkdirs();
         }
@@ -70,14 +72,15 @@ public class UploadController {
                 .append(request.getServerPort())
                 .append(request.getContextPath())
                 .append(filePath);
+        System.out.println("Url: " + url);
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "");
         try {
             File newFile = new File(fileFolder, fileName);
-            System.out.println(newFile.getAbsolutePath());  //控制日志打印输出
+            System.out.println("newFile.getAbsolutePath()" + newFile.getAbsolutePath());  //控制日志打印输出
             file.transferTo(newFile);
 
             url.append("/").append(fileName);
-            uploadFilePath.append(filePath).append(File.separator).append(fileName);  //注意平台的区别  不能随意用“/”
+            uploadFilePath.append(filePath.substring(filePath.length() - 8)).append(File.separator).append(fileName);  //注意平台的区别  不能随意用“/”
 
             //上传成功后同时将路径更新进数据库   （suid、editTime）
             upFile upfile = new upFile();
@@ -92,13 +95,13 @@ public class UploadController {
             upfile.setDownNumber(0);
 
             int result = upfileService.addupFile(upfile);
-            if(result==1)
-                return RespBean.ok("文件上传成功! 文件url="+url.toString());
+            if (result == 1)
+                return RespBean.ok("文件上传成功! 文件url=" + url.toString());
             else
                 return RespBean.error("文件上传成功,更新数据库失败！");
         } catch (IOException e) {
             e.printStackTrace();
-            return  RespBean.error("后端异常...");
+            return RespBean.error("后端异常...");
         }
     }
 /*
@@ -142,7 +145,7 @@ public class UploadController {
         BufferedOutputStream stream = null;
         for (int i = 0; i < files.size(); ++i) {
             file = files.get(i);
-           // String filePath = "/Users/dalaoyang/Downloads/";
+            // String filePath = "/Users/dalaoyang/Downloads/";
 
             String fileName = file.getOriginalFilename();
             File fileDir = getFilepath();
@@ -167,10 +170,10 @@ public class UploadController {
         return new RespBean("success", "批量上传成功");
     }
 
-    @RequestMapping(value = "/downloadFile",method = RequestMethod.GET)  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
-    public Object downloadFile(HttpServletRequest request, HttpServletResponse response,Long id) {
+    @RequestMapping(value = "/downloadFile", method = RequestMethod.GET)  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
+    public Object downloadFile(HttpServletRequest request, HttpServletResponse response, Long id) {
         upFile upfile = upfileService.getupFileById(id);
-        String fileName = upfile.getPath();  // "1.txt";// 文件名
+        String fileRoot = upfile.getPath();
 
         Map<String, Object> map = new HashMap<>();
         StringBuffer url = new StringBuffer();
@@ -180,31 +183,28 @@ public class UploadController {
                 .append(":")
                 .append(request.getServerPort())
                 .append(request.getContextPath())
-                .append(fileName.substring(0,17));
-
-        System.out.println("url:  "+url);
-        url.append(fileName.substring(17));
+                .append(FILE_PATH_PERFIX)
+                .append(fileRoot);
+        System.out.println("url:  " + url);
         map.put("url", url);
+
         if (upfile != null) {
-            //设置文件路径
-            /*File fileDir = getFilepath();
-            File file = new File(fileDir.getAbsolutePath()+File.separator +upfile.getPath());*/
+            System.out.println("fileRoot.substring(0,8): " + fileRoot.substring(0, 8));// 20190705
+            System.out.println("fileRoot.substring(8): " + fileRoot.substring(8));  //  \ec9b49f1-a08a-4b5f-a09d-ef2091e5d5b5_1.txt
 
-            System.out.println("fileName.substring(0,17): "+fileName.substring(0,17));// /docfile/20190622
-            System.out.println("fileName.substring(17): "+fileName.substring(17));  //\da840290-86dd-4f8c-a2e3-1bb8b9ee319d_1.txt
-
-            String fileFolderPath = request.getServletContext().getRealPath(fileName.substring(0,17));
-            System.out.println("fileFolderPath: "+fileFolderPath);
+            String fileFolderPath = FILE_PATH_PERFIX + fileRoot.substring(0, 8); //   /d://upload/docfile/20190705
+            System.out.println("fileFolderPath: " + fileFolderPath);
+            String fileName = fileRoot.substring(8);
 
             File fileFolder = new File(fileFolderPath);
-            File file = new File(fileFolder, fileName.substring(17));
+            File file = new File(fileFolder, fileName);
 
-            System.out.println("filePath:  "+file.getAbsolutePath());
+            System.out.println("filePath:  " + file.getAbsolutePath());
             if (file.exists()) {
                 response.setContentType("application/force-download");// 设置强制下载不打开
-               // response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名*/
-               // response.setContentType("multipart/form-data");
-                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(fileName.lastIndexOf("_")+1)); //fileName.substring(17)
+                // response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);// 设置文件名*/
+                // response.setContentType("multipart/form-data");
+                response.setHeader("Content-Disposition", "attachment;filename=" + fileName.substring(fileName.lastIndexOf("_") + 1)); //fileName.substring(17)
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
@@ -218,7 +218,7 @@ public class UploadController {
                         i = bis.read(buffer);
                     }
                     upfileService.downIncrement(id);  //更新该文件的下载次数
-                    return RespBean.ok( "文件下载成功",map);
+                    return RespBean.ok("文件下载成功", map);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -239,6 +239,7 @@ public class UploadController {
                 }
             }
         }
-        return  RespBean.error("文件下载失败...");
+        return RespBean.error("文件下载失败...");
     }
+
 }

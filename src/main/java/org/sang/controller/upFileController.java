@@ -126,9 +126,11 @@ public class upFileController {
     public RespBean lowDownload(){
         Map<String,Object> map=new HashMap<>();
         List<upFileBean> list=upfileService.getLawStatistics();
-        map.put("list",list);
-        return RespBean.ok("发送成功",map);
-
+        if(list != null && list.size() > 0){
+            map.put("list",list);
+            return RespBean.ok("发送成功",map);
+        }
+        return RespBean.error("数据库中内容为空，没有获得相应数据");
     }
 
     /**
@@ -139,7 +141,10 @@ public class upFileController {
     public RespBean resourceDownload(){
         Map<String,Object> map=new HashMap<>();
         List<upFileBean> list=upfileService.getStudyStatistics();
-        map.put("list",list);
-        return RespBean.ok("发送成功",map);
+        if(list != null && list.size() > 0){
+            map.put("list",list);
+            return RespBean.ok("发送成功",map);
+        }
+       return RespBean.error("数据库中内容为空，没有获得相应数据");
     }
 }

@@ -219,21 +219,24 @@ public class ArticleController {
 
     /**
      * 统计发帖数量最多前十用户和数量
-     * @return
      */
     @RequestMapping(value = "/articleStatistics",method = RequestMethod.GET)
     public RespBean dataStatistics() {
         List<ArticleBean> list = articleService.getArticleCountAndUser();
-        List<String> nickname = new ArrayList();
-        List<Integer> quantity = new ArrayList();
-        for(ArticleBean s: list){
-            nickname.add(s.getNickname());
-            quantity.add(s.getQuantity());
+        if(list != null && list.size() > 0){
+            List<String> nickname = new ArrayList();
+            List<Integer> quantity = new ArrayList();
+            for(ArticleBean s: list){
+                nickname.add(s.getNickname());
+                quantity.add(s.getQuantity());
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("nickname", nickname);
+            map.put("quantity",quantity);
+            return RespBean.ok("统计获得发帖数最多的十个用户",map);
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("nickname", nickname);
-        map.put("quantity",quantity);
-        return RespBean.ok("统计获得发帖数最多的十个用户",map);
+        return RespBean.error("数据库中内容为空，没有获得相应数据");
+
     }
 
     //热帖，获取前十评论数的文章 发表人，文章标题，文章评论数
@@ -241,8 +244,11 @@ public class ArticleController {
     public RespBean hotArticle(){
         Map<String,Object> map=new HashMap<>();
         List<Article> list=articleService.getHotArticle();
-        map.put("list",list);
-        return RespBean.ok("发送成功", map);
+        if(list != null && list.size() > 0){
+            map.put("list",list);
+            return RespBean.ok("发送成功", map);
+        }
+        return RespBean.error("数据库中内容为空，没有获得相应数据");
     }
 
 }

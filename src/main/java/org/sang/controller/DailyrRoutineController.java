@@ -112,9 +112,10 @@ public class DailyrRoutineController {
         StringBuffer uploadFilePath = new StringBuffer();
         String filePath = new String(FILE_PATH_PERFIX+ sdf.format(new Date()));
         System.out.println("filePath: "+filePath);
-        String fileFolderPath = request.getServletContext().getRealPath(filePath);
-        System.out.println("fileFolderPath: "+fileFolderPath);
-        File fileFolder = new File(fileFolderPath);
+
+       /* String fileFolderPath = request.getServletContext().getRealPath(filePath);
+        System.out.println("fileFolderPath: "+fileFolderPath);*/
+        File fileFolder = new File(filePath);
         if (!fileFolder.exists()) {
             fileFolder.mkdirs();
         }
@@ -128,11 +129,11 @@ public class DailyrRoutineController {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll(" ", "");
         try {
             File newFile = new File(fileFolder, fileName);
-            System.out.println(newFile.getAbsolutePath());  //控制日志打印输出
+            System.out.println("newFile.getAbsolutePath()" + newFile.getAbsolutePath());  //控制日志打印输出
             file.transferTo(newFile);
 
             url.append("/").append(fileName);
-            uploadFilePath.append(filePath).append(File.separator).append(fileName);  //注意平台的区别  不能随意用“/”
+            uploadFilePath.append(filePath.substring(filePath.length() - 8)).append(File.separator).append(fileName);  //注意平台的区别  不能随意用“/”
 
             //上传成功后同时将路径更新进数据库   （suid、editTime）
             DailyRoutine dailyRoutine = new DailyRoutine();
@@ -160,7 +161,7 @@ public class DailyrRoutineController {
     @RequestMapping(value = "/downloadDr",method = RequestMethod.GET)  //根据文件对应的id，在数据库取得文件存储的相对路径，再进行对应的下载
     public Object downloadFile(HttpServletRequest request, HttpServletResponse response, Long id) {
         DailyRoutine dailyRoutine = dailyRoutineService.getDailyRoutineById(id);
-        String fileName = dailyRoutine.getPath();
+        String fileRoot = dailyRoutine.getPath();
 
         Map<String, Object> map = new HashMap<>();
         StringBuffer url = new StringBuffer();
@@ -170,24 +171,23 @@ public class DailyrRoutineController {
                 .append(":")
                 .append(request.getServerPort())
                 .append(request.getContextPath())
-                .append(fileName.substring(0,22));
+                .append(FILE_PATH_PERFIX)
+                .append(fileRoot);
 
         System.out.println("url:  "+url);
-        url.append(fileName.substring(22));
         map.put("url", url);
+
         if (dailyRoutine != null) {
-            //设置文件路径
-            /*File fileDir = getFilepath();
-            File file = new File(fileDir.getAbsolutePath()+File.separator +upfile.getPath());*/
 
-            System.out.println("fileName.substring(0,22): "+fileName.substring(0,22));// /docfile/20190622
-            System.out.println("fileName.substring(22): "+fileName.substring(22));  //\da840290-86dd-4f8c-a2e3-1bb8b9ee319d_1.txt
+            System.out.println("fileName.substring(0,8): "+fileRoot.substring(0,8));// /docfile/20190622
+            System.out.println("fileName.substring(8): "+fileRoot.substring(8));  //\da840290-86dd-4f8c-a2e3-1bb8b9ee319d_1.txt
 
-            String fileFolderPath = request.getServletContext().getRealPath(fileName.substring(0,22));
+            String fileFolderPath = FILE_PATH_PERFIX + fileRoot.substring(0, 8); ;
             System.out.println("fileFolderPath: "+fileFolderPath);
+            String fileName = fileRoot.substring(8);
 
             File fileFolder = new File(fileFolderPath);
-            File file = new File(fileFolder, fileName.substring(22));
+            File file = new File(fileFolder, fileName);
 
             System.out.println("filePath:  "+file.getAbsolutePath());
             if (file.exists()) {
