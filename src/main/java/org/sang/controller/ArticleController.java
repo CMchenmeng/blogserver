@@ -5,6 +5,7 @@ import org.sang.bean.Article;
 import org.sang.bean.Notice;
 import org.sang.bean.Reply;
 import org.sang.bean.RespBean;
+import org.sang.bean.vo.ArticleBean;
 import org.sang.service.ArticleService;
 import org.sang.service.NoticeService;
 import org.sang.service.ReplyService;
@@ -193,7 +194,7 @@ public class ArticleController {
         return RespBean.error( "操作失败!");
     }
 
-    @RequestMapping("/dataStatistics")
+/*    @RequestMapping("/dataStatistics")
     public Map<String,Object> dataStatistics() {
         Map<String, Object> map = new HashMap<>();
         List<String> categories = articleService.getCategories();
@@ -201,9 +202,7 @@ public class ArticleController {
         map.put("categories", categories);
         map.put("ds", dataStatistics);
         return map;
-    }
-
-
+    }*/
     //根据当前用户获取其已发表的文章帖子
     @RequestMapping(value = "/getArticleByCurrentUser",method = RequestMethod.GET)
     public RespBean getArticleByCurrerntUser(@RequestParam(value = "state", defaultValue = "0") Integer state,
@@ -216,6 +215,34 @@ public class ArticleController {
         map.put("totalCount", totalCount);
         map.put("articles", articles);
         return RespBean.ok("获取当前用户发表的文章帖子成功",map);
+    }
+
+    /**
+     * 统计发帖数量最多前十用户和数量
+     * @return
+     */
+    @RequestMapping(value = "/articleStatistics",method = RequestMethod.GET)
+    public RespBean dataStatistics() {
+        List<ArticleBean> list = articleService.getArticleCountAndUser();
+        List<String> nickname = new ArrayList();
+        List<Integer> quantity = new ArrayList();
+        for(ArticleBean s: list){
+            nickname.add(s.getNickname());
+            quantity.add(s.getQuantity());
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("nickname", nickname);
+        map.put("quantity",quantity);
+        return RespBean.ok("统计获得发帖数最多的十个用户",map);
+    }
+
+    //热帖，获取前十评论数的文章 发表人，文章标题，文章评论数
+    @RequestMapping(value = "/hotArticle",method =RequestMethod.GET)
+    public RespBean hotArticle(){
+        Map<String,Object> map=new HashMap<>();
+        List<Article> list=articleService.getHotArticle();
+        map.put("list",list);
+        return RespBean.ok("发送成功", map);
     }
 
 }

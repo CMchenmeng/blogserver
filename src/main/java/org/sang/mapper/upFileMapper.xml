@@ -17,6 +17,21 @@
         <result column="isTop" property="isTop"/>
     </resultMap>
 
+    <resultMap id="ExResultMap" type="org.sang.bean.vo.upFileBean">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="path" property="path"/>
+        <result column="remark" property="remark"/>
+        <result column="cid" property="cid"/>
+        <result column="uid" property="uid"/>
+        <result column="uploadTime" property="uploadTime"/>
+        <result column="editTime" property="editTime"/>
+        <result column="pageView" property="pageView"/>
+        <result column="state" property="state"/>
+        <result column="isTop" property="isTop"/>
+        <result column="quantity" property="quantity"/>
+    </resultMap>
+
     <insert id="addupFile" parameterType="org.sang.bean.upFile" useGeneratedKeys="true" keyProperty="id">
          INSERT INTO upfile SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},isTop=#{isTop},downNumber=#{downNumber}
     </insert>
@@ -98,4 +113,13 @@ WHERE up.id = #{id}
     <update id="downIncrement" parameterType="Long">
         UPDATE upfile set downNumber=downNumber+1 WHERE id=#{fid}
     </update>
+
+    <select id="getLawStatistics" resultMap="ExResultMap">
+        SELECT	c.cateName,SUM(downNumber) AS quantity FROM	category c,	upfile up WHERE	up.cid = c.id AND up.cid BETWEEN 20 AND 35 AND up.state = 1 GROUP BY cid ORDER BY quantity DESC
+    </select>
+
+    <select id="getStudyStatistics" resultMap="ExResultMap">
+        select c.cateName,SUM(downNumber) as quantity from category c,upfile up WHERE up.cid=c.id and up.cid BETWEEN 36 and 60 and up.state=1 group by cid order by quantity desc
+    </select>
+
 </mapper>

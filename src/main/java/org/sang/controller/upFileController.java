@@ -3,6 +3,7 @@ package org.sang.controller;
 import org.sang.bean.Category;
 import org.sang.bean.RespBean;
 import org.sang.bean.upFile;
+import org.sang.bean.vo.upFileBean;
 import org.sang.service.CategoryService;
 import org.sang.service.upFileService;
 import org.sang.utils.Util;
@@ -117,4 +118,28 @@ public class upFileController {
         return RespBean.error("获取对应类别的id有误，请检查重新输入!");
     }
 
+    /**
+     * 法律法规类别下前十下载量的文件
+     * @return
+     */
+    @RequestMapping(value = "/lawStatistics",method = RequestMethod.GET)
+    public RespBean lowDownload(){
+        Map<String,Object> map=new HashMap<>();
+        List<upFileBean> list=upfileService.getLawStatistics();
+        map.put("list",list);
+        return RespBean.ok("发送成功",map);
+
+    }
+
+    /**
+     * 学习资料类别下前十下载量的文件
+     * @return
+     */
+    @RequestMapping(value = "/studyStatistics",method = RequestMethod.GET)
+    public RespBean resourceDownload(){
+        Map<String,Object> map=new HashMap<>();
+        List<upFileBean> list=upfileService.getStudyStatistics();
+        map.put("list",list);
+        return RespBean.ok("发送成功",map);
+    }
 }

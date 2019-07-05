@@ -141,4 +141,5 @@ public class upFile {
     public void setIsTop(Integer isTop) {
         this.isTop = isTop;
     }
+
 }

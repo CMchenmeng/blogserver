@@ -161,4 +161,5 @@ public class Article {
     public void setPageView(Integer pageView) {
         this.pageView = pageView;
     }
+
 }

@@ -3,6 +3,7 @@ package org.sang.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Article;
+import org.sang.bean.vo.ArticleBean;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -44,4 +45,9 @@ public interface ArticleMapper {
     List<String> getCategories(Long uid);
 
     List<Integer> getDataStatistics(Long uid);
+
+    //统计作者文章发表数量
+    List<ArticleBean> getArticleCountAndUser();
+    //文章热帖
+    List<Article> getHotArticle();
 }

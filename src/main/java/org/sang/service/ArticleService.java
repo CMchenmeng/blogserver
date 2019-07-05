@@ -3,6 +3,7 @@ package org.sang.service;
 import org.sang.bean.Article;
 import org.sang.bean.Notice;
 import org.sang.bean.Reply;
+import org.sang.bean.vo.ArticleBean;
 import org.sang.mapper.ArticleMapper;
 import org.sang.mapper.ReplyMapper;
 import org.sang.mapper.TagsMapper;
@@ -183,5 +184,18 @@ public class ArticleService {
      */
     public List<Integer> getDataStatistics() {
         return articleMapper.getDataStatistics(Util.getCurrentUser().getId());
+    }
+
+    /**
+     * 获取文章数量前十
+     * @return
+     */
+    public List<ArticleBean> getArticleCountAndUser(){
+        return articleMapper.getArticleCountAndUser();
+    }
+
+    //热帖，获取前十评论数的文章 发表人，文章标题，文章评论数
+    public List<Article> getHotArticle(){
+        return  articleMapper.getHotArticle();
     }
 }

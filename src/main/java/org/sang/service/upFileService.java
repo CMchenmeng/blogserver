@@ -1,6 +1,8 @@
 package org.sang.service;
 
+import org.sang.bean.Article;
 import org.sang.bean.upFile;
+import org.sang.bean.vo.upFileBean;
 import org.sang.mapper.upFileMapper;
 import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +80,20 @@ public class upFileService {
 
     public void downIncrement(Long fid) {
         upfileMapper.downIncrement(fid);
+    }
+    /**
+     * 法律法规类别下前十下载量的文件
+     * @return
+     */
+    public List<upFileBean> getLawStatistics(){
+        return  upfileMapper.getLawStatistics();
+    }
+
+    /**
+     * 学习资料类别下前十下载量的文件
+     * @return
+     */
+    public List<upFileBean> getStudyStatistics(){
+        return upfileMapper.getStudyStatistics();
     }
 }

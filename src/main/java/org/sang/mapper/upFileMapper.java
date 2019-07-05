@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Article;
 import org.sang.bean.upFile;
+import org.sang.bean.vo.upFileBean;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,4 +34,10 @@ public interface upFileMapper {
     int upFileToFirst(@Param("id") Long id,@Param("editTime")Timestamp editTime,@Param("isTop") Integer isTop);
 
     void downIncrement(@Param("fid") Long fid);
+
+    //法律法规类别下前十下载量的文件
+    List<upFileBean> getLawStatistics();
+
+    //学习资料类别下前十下载量的文件
+    List<upFileBean> getStudyStatistics();
 }
