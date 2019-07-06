@@ -115,11 +115,11 @@ WHERE up.id = #{id}
     </update>
 
     <select id="getLawStatistics" resultMap="ExResultMap">
-        SELECT	c.cateName,SUM(downNumber) AS quantity FROM	category c,	upfile up WHERE	up.cid = c.id AND up.cid BETWEEN 20 AND 35 AND up.state = 1 GROUP BY cid ORDER BY quantity DESC
+        SELECT	c.cateName,SUM(downNumber) AS quantity FROM	category c,	upfile up WHERE	up.cid = c.id AND up.cid BETWEEN 20 AND 35 AND up.state = 1 GROUP BY cid ORDER BY quantity DESC limit 0,6
     </select>
 
     <select id="getStudyStatistics" resultMap="ExResultMap">
-        select c.cateName,SUM(downNumber) as quantity from category c,upfile up WHERE up.cid=c.id and up.cid BETWEEN 36 and 60 and up.state=1 group by cid order by quantity desc
+        select c.cateName,SUM(downNumber) as quantity from category c,upfile up WHERE up.cid=c.id and up.cid BETWEEN 36 and 60 and up.state=1 group by cid order by quantity desc limit 0,6
     </select>
 
 </mapper>

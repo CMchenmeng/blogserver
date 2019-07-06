@@ -10,6 +10,7 @@ import org.sang.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,8 +127,15 @@ public class upFileController {
     public RespBean lowDownload(){
         Map<String,Object> map=new HashMap<>();
         List<upFileBean> list=upfileService.getLawStatistics();
+        List<String> lawCate = new ArrayList<>();
+        List<Integer> lawCount = new ArrayList<>();
         if(list != null && list.size() > 0){
-            map.put("list",list);
+            for(upFileBean upbean : list){
+                lawCate.add(upbean.getCateName());
+                lawCount.add(upbean.getQuantity());
+            }
+            map.put("lawCate",lawCate);
+            map.put("lawCount",lawCount);
             return RespBean.ok("发送成功",map);
         }
         return RespBean.error("数据库中内容为空，没有获得相应数据");
@@ -140,9 +148,16 @@ public class upFileController {
     @RequestMapping(value = "/studyStatistics",method = RequestMethod.GET)
     public RespBean resourceDownload(){
         Map<String,Object> map=new HashMap<>();
+        List<String> studyCate = new ArrayList<>();
+        List<Integer> studyCount = new ArrayList<>();
         List<upFileBean> list=upfileService.getStudyStatistics();
         if(list != null && list.size() > 0){
-            map.put("list",list);
+            for(upFileBean upbean : list){
+                studyCate.add(upbean.getCateName());
+                studyCount.add(upbean.getQuantity());
+            }
+            map.put("studyCate",studyCate);
+            map.put("studyCount",studyCount);
             return RespBean.ok("发送成功",map);
         }
        return RespBean.error("数据库中内容为空，没有获得相应数据");
