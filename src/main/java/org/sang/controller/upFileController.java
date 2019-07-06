@@ -100,9 +100,9 @@ public class upFileController {
         if(Util.isShenhe()){
             int i = upfileService.upFileToFirst(id,isTop);
             if (i == 1) {
-                return new RespBean("success", "资料设置/取消置顶操作成功!");
+                return  RespBean.ok( "资料设置/取消置顶操作成功!");
             }
-            return new RespBean("error", "资料设置/取消置顶操作失败!");
+            return RespBean.error("资料设置/取消置顶操作失败!");
         }else
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }

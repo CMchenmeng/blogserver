@@ -1,5 +1,7 @@
 package org.sang.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.sang.bean.RespBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -17,8 +19,10 @@ public class AuthenticationAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest httpServletRequest, HttpServletResponse resp, AccessDeniedException e) throws IOException, ServletException {
         resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
         resp.setCharacterEncoding("UTF-8");
+        RespBean respBean = RespBean.ok("权限不足,请联系管理员!");
         PrintWriter out = resp.getWriter();
-        out.write("权限不足,请联系管理员!");
+        ObjectMapper om = new ObjectMapper();
+        out.write(om.writeValueAsString(respBean));
         out.flush();
         out.close();
     }

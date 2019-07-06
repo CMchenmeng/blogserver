@@ -31,15 +31,16 @@ public class NoticeController {
         return  RespBean.error("添加通知公告失败!");
     }
 
-
     //置顶操作
     @RequestMapping(value = "/updateNoticeTop",method = RequestMethod.GET)
     public RespBean updateNoticeToFirst(Long id,Integer isTop){
+        if(isTop < 0 || isTop > 2)
+            return RespBean.error("传入的isTop值有误，请检查后重新输入！");
         int i = noticeService.upNoticeToFirst(id,isTop);
         if (i == 1) {
-            return new RespBean("success", "通知公告设置/取消置顶操作成功!");
+            return RespBean.ok("通知公告设置/取消置顶操作成功!");
         }
-        return new RespBean("error", "设置/取消置顶操作失败!");
+        return RespBean.error("设置/取消置顶操作失败!");
     }
 
     //将通知公告放入草稿箱  即设置state为0  state由前端传入

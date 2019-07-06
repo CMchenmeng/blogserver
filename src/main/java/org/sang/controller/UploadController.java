@@ -1,5 +1,7 @@
 package org.sang.controller;
 
+
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.sang.bean.RespBean;
 import org.sang.bean.upFile;
 import org.sang.service.upFileService;
@@ -240,6 +242,22 @@ public class UploadController {
             }
         }
         return RespBean.error("文件下载失败...");
+    }
+//测试没有起作用
+    @ExceptionHandler
+    public RespBean doException(Exception e,HttpServletRequest request) throws Exception {
+        Map<String,Object> map = new HashMap<String,Object>();
+        if (e instanceof FileUploadBase.FileSizeLimitExceededException) {
+            long maxSize = ((FileUploadBase.FileSizeLimitExceededException) e)
+                    .getPermittedSize();
+            map.put("error", "上传文件太大，不能超过" + maxSize / 1024 /1024 + "M");
+        }else if(e instanceof RuntimeException){
+            map.put("error", "未选中文件");
+        }else{
+            map.put("error", "上传失败");
+        }
+        return RespBean.error("上传时发生错误的信息提示",map);
+
     }
 
 }

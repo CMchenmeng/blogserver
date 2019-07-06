@@ -115,7 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 设置不拦截规则
-        web.ignoring().antMatchers("/blogimg/**","/docfile/**","/index.html","/static/**");
+        web.ignoring().antMatchers("/blogimg/**","/docfile/**","/index.html","/static/**");  //注意此资源将对上传下载产生影响
     }
 
     @Bean

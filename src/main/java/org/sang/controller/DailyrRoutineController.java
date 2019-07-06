@@ -71,9 +71,9 @@ public class DailyrRoutineController {
         if(Util.isShenhe()){
             int i = dailyRoutineService.DailyRoutineToFirst(id,isTop);
             if (i == 1) {
-                return new RespBean("success", "日常事务设置/取消置顶操作成功!");
+                return RespBean.ok("日常事务设置/取消置顶操作成功!");
             }
-            return new RespBean("error", "日常事务设置/取消置顶操作失败!");
+            return RespBean.error("日常事务设置/取消置顶操作失败!");
         }else
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
@@ -90,7 +90,7 @@ public class DailyrRoutineController {
     }
 
  /*   public File getFilepath(){
-        String filePath = new String("./"+FILE_PATH_PERFIX);;
+        String filePath = new String("./"+FILE_PATH_PERFIX);
         File fileDir = new File(filePath);
         if(!fileDir.exists()){
             // 递归生成文件夹
@@ -100,7 +100,7 @@ public class DailyrRoutineController {
     }*/
     //日常事务管理的新增上传功能
     @RequestMapping(value="/uploadDr",method = RequestMethod.POST)
-    public Object singleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
+    public Object singleDailyRoutineUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                                    @RequestParam("title") String title,
                                    @RequestParam("remark") String remark){
         if(Objects.isNull(file) || file.isEmpty()){
@@ -108,6 +108,9 @@ public class DailyrRoutineController {
         }
         if(title == null ||title.length() ==0)
             return RespBean.error("输入日常事务文件的标题为空，请重新输入");
+
+       // Long userId = Util.getCurrentUser().getId();
+       // System.out.println("userId: "+userId);
         StringBuffer url = new StringBuffer();
         StringBuffer uploadFilePath = new StringBuffer();
         String filePath = new String(FILE_PATH_PERFIX+ sdf.format(new Date()));
@@ -140,7 +143,7 @@ public class DailyrRoutineController {
             dailyRoutine.setTitle(title);
             dailyRoutine.setPath(uploadFilePath.toString());   //
             dailyRoutine.setRemark(remark);
-            dailyRoutine.setCid(new Long(80));
+            dailyRoutine.setCid(new Long((long)80));
             dailyRoutine.setUid(Util.getCurrentUser().getId());
             dailyRoutine.setUploadTime(new Timestamp(System.currentTimeMillis()));
             dailyRoutine.setState(0);

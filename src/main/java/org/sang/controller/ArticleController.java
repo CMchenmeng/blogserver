@@ -168,12 +168,14 @@ public class ArticleController {
     //置顶操作
     @RequestMapping(value = "/updateArticleTop",method = RequestMethod.POST)
     public RespBean updateArticleTop(Long aid,Integer isTop){
+        if(isTop < 0 || isTop > 2)
+            return RespBean.error("传入的istop值有误，请检查后重新输入！");
         if(Util.isShenhe()){
             int i = articleService.updateArticleTop(aid,isTop);
             if (i == 1) {
-                return new RespBean("success", "文章帖子设置/取消置顶操作成功!");
+                return RespBean.ok("文章帖子设置/取消置顶操作成功!");
             }
-            return new RespBean("error", "文章帖子设置/取消置顶操作失败!");
+            return RespBean.error("文章帖子设置/取消置顶操作失败!");
         }else
             return RespBean.error("你的权限不足，请联系管理员修改权限");
     }
