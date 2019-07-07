@@ -74,7 +74,7 @@ public class ArticleService {
         String stripHtml = stripHtml(mdContent);
         article.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
 
-        article.setState(1);
+        article.setState(0);
         article.setIsTop(0);
         article.setPageView(0);
         int i = articleMapper.addNewArticle(article);

@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by sang on 2017/12/17.
@@ -67,6 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
                 httpServletResponse.setContentType("application/json;charset=utf-8");
                 RespBean respBean = RespBean.ok("登录成功!", UserUtils.getCurrentHr());
+                countUserLoginTimes();  //统计用户登录次数 将当日的用户登录
                 PrintWriter out = httpServletResponse.getWriter();
                 ObjectMapper om = new ObjectMapper();
                 out.write(om.writeValueAsString(respBean));
@@ -121,5 +124,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     AccessDeniedHandler getAccessDeniedHandler() {
         return new AuthenticationAccessDeniedHandler();
+    }
+
+    //统计用户登录次数 将当日的用户登录
+    public void countUserLoginTimes(){
+        //1.判断当前的时间  年月日
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+        //2.判断当前时间是否有用户登录，如果没有，则新建记录；如果有，则将当前日登陆用户人数+1；
+        if(userService.getUserCountByDate(date) != null){
+            userService.updateUserCountByDate(date);
+        }else
+            userService.insertUserCount(date);
     }
 }

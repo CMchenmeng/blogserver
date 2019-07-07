@@ -2,6 +2,7 @@ package org.sang.service;
 
 import org.sang.bean.Role;
 import org.sang.bean.User;
+import org.sang.bean.UserCount;
 import org.sang.mapper.RolesMapper;
 import org.sang.mapper.UserMapper;
 import org.sang.utils.Util;
@@ -118,5 +119,16 @@ public class UserService implements UserDetailsService {
     public List<User> getUserByRole(List rids,Integer page, Integer count,String keywords){
         int start = (page - 1) * count;
         return userMapper.getUserByRole(rids,start,count,keywords);
+    }
+
+    public void insertUserCount(String date){
+        userMapper.insertUserCount(date,1);
+    }
+
+    public UserCount getUserCountByDate(String date){
+        return userMapper.getUserCountByDate(date);
+    }
+    public void updateUserCountByDate(String date){
+        userMapper.updateUserCountByDate(date);
     }
 }

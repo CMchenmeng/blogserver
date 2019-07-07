@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.sang.bean.Role;
 import org.sang.bean.User;
+import org.sang.bean.UserCount;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -39,4 +40,10 @@ public interface UserMapper {
     int getUserCountByRole(@Param("rids") List rids,@Param("keywords") String keywords);
 
     List<User> getUserByRole(@Param("rids") List rids,@Param("start") Integer start, @Param("count") Integer count,@Param("keywords") String keywords);
+
+    void insertUserCount(@Param("date") String date, @Param("sum") Integer sum);
+
+    UserCount getUserCountByDate(@Param("date") String date);
+
+    void updateUserCountByDate(@Param("date") String date);
 }

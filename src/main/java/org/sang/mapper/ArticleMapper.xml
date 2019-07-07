@@ -166,6 +166,6 @@
     </select>
 
     <select id="getHotArticle" resultMap="BaseResultMap">
-        SELECT u.nickname,a.title,a.summary,a.pageView from article a,user u WHERE a.state=1 and a.uid=u.id ORDER BY a.pageView desc limit 0,6
+        SELECT u.nickname,a.id,a.title,a.summary,a.pageView from article a,user u WHERE a.state=1 and a.uid=u.id ORDER BY a.pageView desc limit 0,6
     </select>
 </mapper>

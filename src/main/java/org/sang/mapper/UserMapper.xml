@@ -100,4 +100,16 @@
             (#{rid},#{id})
         </foreach>
     </insert>
+
+    <insert id="insertUserCount">
+        INSERT INTO usercount set countDate=#{date},sum=#{sum}
+    </insert>
+
+    <select id="getUserCountByDate" resultType="org.sang.bean.UserCount">
+        select * from usercount where countDate=#{date}
+    </select>
+
+    <update id="updateUserCountByDate">
+         UPDATE userCount set sum=sum+1 WHERE countDate=#{date}
+    </update>
 </mapper>
