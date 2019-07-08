@@ -102,7 +102,7 @@
     </insert>
 
     <insert id="insertUserCount">
-        INSERT INTO usercount set countDate=#{date},sum=#{sum}
+        INSERT INTO usercount set countDate=#{date},total=#{total}
     </insert>
 
     <select id="getUserCountByDate" resultType="org.sang.bean.UserCount">
@@ -110,6 +110,10 @@
     </select>
 
     <update id="updateUserCountByDate">
-         UPDATE userCount set sum=sum+1 WHERE countDate=#{date}
+         UPDATE usercount set total=total+1 WHERE countDate=#{date}
     </update>
+
+    <select id="getLoginCount" resultType="org.sang.bean.UserCount">
+    select countDate,total from usercount
+    </select>
 </mapper>

@@ -1,13 +1,13 @@
 package org.sang.bean;
 
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class UserCount {
 
     private Long id;
-    private Date date;
-    private Long sum;
+    private String date;
+    private Long total;
 
     public Long getId() {
         return id;
@@ -17,19 +17,19 @@ public class UserCount {
         this.id = id;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public Long getSum() {
-        return sum;
+    public Long getTotal() {
+        return total;
     }
 
-    public void setSum(Long sum) {
-        this.sum = sum;
+    public void setTotal(Long total) {
+        this.total = total;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -48,12 +49,16 @@ public class UserService implements UserDetailsService {
      * 2表示失败
      */
     public int reg(User user) {
+        //如果用户名存在，返回错误
         User loadUserByUsername = userMapper.loadUserByUsername(user.getUsername());
         if (loadUserByUsername != null) {
             return 1;
         }
         //插入用户,插入之前先对密码进行加密
-        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encode = encoder.encode(user.getPassword());
+        user.setPassword(encode);
+       // user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         user.setEnabled(true);//用户可用
         long result = userMapper.reg(user);
         //配置用户的角色，默认都是普通用户
@@ -71,7 +76,7 @@ public class UserService implements UserDetailsService {
         return userMapper.updateUserEmail(email, Util.getCurrentUser().getId());
     }
 
-    //
+    //此接口暂时未使用，同时后续的使用过程中需对原始密码进行验证通过后再进行更改操作
     public int updateUserPassword(User user){
         User loadUserByUsername = userMapper.getUserById(user.getId());
         //User loadUserByUsername = userMapper.loadUserByUsername(user.getUsername());
@@ -79,7 +84,10 @@ public class UserService implements UserDetailsService {
             //修改用户，修改之前先对用户密码进行加密
             if(user.getPassword()==null)
                 return 3;
-            user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String encode = encoder.encode(user.getPassword());
+            user.setPassword(encode);
+            //user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
             user.setEnabled(true);//用户可用
             int result = userMapper.updateUserPassword(user);
             return result;
@@ -122,13 +130,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void insertUserCount(String date){
-        userMapper.insertUserCount(date,1);
+        userMapper.insertUserCount(date,new Long(1));
     }
 
     public UserCount getUserCountByDate(String date){
         return userMapper.getUserCountByDate(date);
     }
+
     public void updateUserCountByDate(String date){
         userMapper.updateUserCountByDate(date);
+    }
+
+    //获取日登陆量
+    public List<UserCount> getLoginCount(){
+        return userMapper.getLoginCount();
     }
 }

@@ -41,9 +41,11 @@ public interface UserMapper {
 
     List<User> getUserByRole(@Param("rids") List rids,@Param("start") Integer start, @Param("count") Integer count,@Param("keywords") String keywords);
 
-    void insertUserCount(@Param("date") String date, @Param("sum") Integer sum);
+    void insertUserCount(@Param("date") String date, @Param("total") Long total);
 
     UserCount getUserCountByDate(@Param("date") String date);
 
     void updateUserCountByDate(@Param("date") String date);
+
+    List<UserCount> getLoginCount();
 }

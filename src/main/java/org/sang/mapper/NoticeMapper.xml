@@ -49,7 +49,7 @@
     </select>
 
     <select id="getNoticeCountByState" resultType="int">
-        SELECT count(*) FROM Notice
+        SELECT count(*) FROM notice
         <where>
             <if test="state!=-1">
                 AND state=#{state}
