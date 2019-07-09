@@ -55,14 +55,14 @@ public class ArticleService {
         return i;
     }
 
-    public int addArticle(String title,String htmlContent,Long cid) {
+    public int addArticle(String title,String htmlContent) {
         //添加操作
         Article article = new Article();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         article.setTitle(title);
         article.setHtmlContent(htmlContent);
-        article.setCid(cid);
+        article.setCid(new Long(60));
         //设置发表日期
         article.setPublishTime(timestamp);
         //设置当前用户

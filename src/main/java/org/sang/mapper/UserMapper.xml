@@ -45,7 +45,7 @@
     <select id="getUserByRole" resultMap="BaseResultMap">
         SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
         r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
-        AND u.id IN (SELECT	u.id FROM USER u,roles_user ru	WHERE u.`id` = ru.`uid`
+        AND u.id IN (SELECT	u.id FROM user u,roles_user ru	WHERE u.`id` = ru.`uid`
         <if test="rids!=null">
             and ru.`rid` IN
             <foreach collection="rids" item="rid" separator="," open="(" close=")">
@@ -114,6 +114,7 @@
     </update>
 
     <select id="getLoginCount" resultType="org.sang.bean.UserCount">
-    select countDate,total from usercount
+          select DATE_FORMAT(countDate,"%y-%m-%d")as date,total from usercount
+          where DATE_SUB(CURDATE(), INTERVAL 30 DAY)  &lt;= countDate ORDER BY countDate
     </select>
 </mapper>

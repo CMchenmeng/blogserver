@@ -26,7 +26,7 @@
     </insert>
 
     <select id="getReplyById" parameterType="Long" resultType="org.sang.bean.Reply">
-      SELECT  rep.*, u.`nickname` FROM reply rep LEFT JOIN USER u ON rep.`uid` = u.`id` WHERE rep.id =#{id}
+      SELECT  rep.*, u.`nickname` FROM reply rep LEFT JOIN user u ON rep.`uid` = u.`id` WHERE rep.id =#{id}
     </select>
 
     <delete id="deleteReplyById"  parameterType="Long">
@@ -42,7 +42,7 @@
     </update>
 
     <select id="getAllReplyByActicleId" resultType="org.sang.bean.Reply">
-        SELECT rep.*,u.`nickname` FROM reply rep INNER JOIN  USER u ON rep.`uid` = u.`id` where 1=1
+        SELECT rep.*,u.`nickname` FROM reply rep INNER JOIN  user u ON rep.`uid` = u.`id` where 1=1
         <if test="state!=-1 and state!=-2">
             and rep.state=1
         </if>

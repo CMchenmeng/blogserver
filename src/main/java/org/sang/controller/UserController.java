@@ -71,9 +71,7 @@ public class UserController {
         map.put("count",count);
         map.put("date",date);
 
-        return RespBean.ok("获得日期和数量",map);
+        return RespBean.ok("获得最近一个月用户登录数量",map);
     }
-
-
 
 }

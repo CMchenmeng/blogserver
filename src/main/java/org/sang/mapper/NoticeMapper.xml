@@ -24,17 +24,17 @@
     </resultMap>
 
     <insert id="addNotice" parameterType="org.sang.bean.Notice" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO Notice SET title=#{title},summary=#{summary},htmlContent=#{htmlContent},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},isTop=#{isTop},state=#{state}
+         INSERT INTO notice SET title=#{title},summary=#{summary},htmlContent=#{htmlContent},cid=#{cid},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},pageView=#{pageView},isTop=#{isTop},state=#{state}
     </insert>
 
     <select id="getNoticeById" parameterType="Long" resultMap="BaseResultMap">
    SELECT	noti.*, t.`tagName`,t.`id` AS tid,u.`nickname`,	c.`cateName` FROM notice noti
-   LEFT JOIN upfile_tags ats ON noti.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id` LEFT JOIN USER u ON noti.`uid` = u.`id` LEFT JOIN category c ON noti.`cid` = c.`id`
+   LEFT JOIN upfile_tags ats ON noti.`id` = ats.`id` LEFT JOIN tags t ON ats.`tid` = t.`id` LEFT JOIN user u ON noti.`uid` = u.`id` LEFT JOIN category c ON noti.`cid` = c.`id`
    WHERE noti.id = #{nid}
     </select>
 
     <select id="getNoticeByState" resultType="org.sang.bean.Notice">
-        SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,a.`isTop`,a.`pageView`,u.`nickname`,a.`cid`,c.`cateName`,a.uid FROM Notice a,user
+        SELECT a.id,a.`title`,a.publishTime,a.summary,a.`editTime`,a.`state`,a.`isTop`,a.`pageView`,u.`nickname`,a.`cid`,c.`cateName`,a.uid FROM notice a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}

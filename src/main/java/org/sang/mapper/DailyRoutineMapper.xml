@@ -18,31 +18,31 @@
     </resultMap>
 
     <insert id="addDailyRoutine" parameterType="org.sang.bean.DailyRoutine" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO dailyRoutine SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},isTop=#{isTop},downNumber=#{downNumber}
+         INSERT INTO dailyroutine SET title=#{title},path=#{path},remark=#{remark},cid=#{cid},uid=#{uid},uploadTime=#{uploadTime},suid=#{suid},editTime=#{editTime},state=#{state},isTop=#{isTop},downNumber=#{downNumber}
     </insert>
 
     <select id="getDailyRoutineById" parameterType="Long" resultMap="BaseResultMap">
-    SELECT	dr.*,u.`nickname`,c.`cateName` FROM	dailyRoutine dr
+    SELECT	dr.*,u.`nickname`,c.`cateName` FROM	dailyroutine dr
     LEFT JOIN USER u ON dr.`uid` = u.`id` LEFT JOIN category c ON dr.`cid` = c.`id`
 WHERE dr.id = #{id}
     </select>
 
     <delete id="deleteDailyRoutineById">
-        DELETE FROM dailyRoutine WHERE id IN
+        DELETE FROM dailyroutine WHERE id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
     <update id="updateDailyRoutineState">
-        UPDATE dailyRoutine SET state=#{state},editTime=#{editTime},suid=#{suid} WHERE id IN
+        UPDATE dailyroutine SET state=#{state},editTime=#{editTime},suid=#{suid} WHERE id IN
         <foreach collection="ids" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>
     </update>
 
     <select id="getDailyRoutineByState" resultType="org.sang.bean.DailyRoutine">
-        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,a.`cid`,a.`isTop`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM dailyRoutine a,user
+        SELECT a.id,a.`title`,a.remark,a.`editTime`,a.`state`,a.`cid`,a.`isTop`,u.`nickname`,c.`id`,c.`cateName`,a.uid FROM dailyroutine a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and cid =#{cid}
         <if test="state!=-1 and state!=-2">
             and a.state=#{state}
@@ -57,7 +57,7 @@ WHERE dr.id = #{id}
     </select>
 
     <select id="getDailyRoutineCountByState" resultType="int">
-        SELECT count(*) FROM dailyRoutine where 1=1 and cid =#{cid}
+        SELECT count(*) FROM dailyroutine where 1=1 and cid =#{cid}
         <if test="state!=-1">
             AND state=#{state}
         </if>
@@ -67,10 +67,10 @@ WHERE dr.id = #{id}
     </select>
 
     <update id="DailyRoutineToFirst" parameterType="org.sang.bean.DailyRoutine">
-        UPDATE dailyRoutine SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
+        UPDATE dailyroutine SET editTime=#{editTime},isTop=#{isTop} WHERE id=#{id}
     </update>
 
     <update id="downIncrement" parameterType="Long">
-        UPDATE dailyRoutine set downNumber=downNumber+1 WHERE id=#{fid}
+        UPDATE dailyroutine set downNumber=downNumber+1 WHERE id=#{fid}
     </update>
 </mapper>
