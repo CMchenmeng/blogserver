@@ -23,11 +23,8 @@ public class ReplyService {
 
     public int addNewReply(Long aid,Reply reply){
         //处理文通知公告摘要
-        if (reply.getSummary() == null || "".equals(reply.getSummary())) {
-            //直接截取
-            String stripHtml = stripHtml(reply.getContent());
-            reply.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
-        }
+        String stripHtml = stripHtml(reply.getContent());
+        reply.setSummary(stripHtml.substring(0, stripHtml.length() > 50 ? 50 : stripHtml.length()));
 
         reply.setPublishTime(new Timestamp(System.currentTimeMillis()));
         reply.setEditTime(new Timestamp(System.currentTimeMillis()));  //业务逻辑时按照上传时间升序进行排序，所有新添加的帖子回复赋初值

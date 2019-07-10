@@ -244,7 +244,7 @@ public class UploadController {
         return RespBean.error("文件下载失败...");
     }
 //测试没有起作用
-    @ExceptionHandler
+ /*   @ExceptionHandler
     public RespBean doException(Exception e,HttpServletRequest request) throws Exception {
         Map<String,Object> map = new HashMap<String,Object>();
         if (e instanceof FileUploadBase.FileSizeLimitExceededException) {
@@ -258,6 +258,6 @@ public class UploadController {
         }
         return RespBean.error("上传时发生错误的信息提示",map);
 
-    }
+    }*/
 
 }

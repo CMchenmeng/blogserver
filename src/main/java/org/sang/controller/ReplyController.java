@@ -28,14 +28,19 @@ public class ReplyController {
 
     //发布文章帖子评论
     @RequestMapping(value = "/addReply", method = RequestMethod.POST)
-    public RespBean addNewReply(Reply reply,long aid){
+    public RespBean addNewReply(String content,long aid){
+        if(content == null || content==""){
+            return RespBean.error("帖子的回复内容不为空");
+        }
+        Reply reply = new Reply();
+        reply.setContent(content);
         int result = replyService.addNewReply(aid,reply);
         if (result == 1) {
             //发布文章帖子评论后同时更新对应文章的评论次数
-            articleService.pvIncrement(reply.getAid());
+            articleService.pvIncrement(aid);
             return  RespBean.ok("发布帖子评论成功");
         } else {
-            return new RespBean("error", reply.getState() == 0 ? "帖子评论保存失败!" : "帖子评论发表失败!");
+            return RespBean.error("帖子评论保存失败!");
         }
     }
 
@@ -49,12 +54,15 @@ public class ReplyController {
     2.删除帖子后，同时进行相应更新操作（文章对应的pageview-1）*/
    @RequestMapping(value="/deleteReplyById",method = RequestMethod.PUT)
    public RespBean deleteReplyById(Long id){
-       if(id == null){
+       if(id == null || id.intValue() < 0){
            return RespBean.error("传入参数有误,请重新检查！");
        }
        if(Util.isShenhe()){
+         //判断数据库是否有该帖子回复，否则后面可能报空指针异常
+           Reply reply = replyService.getReplyById(id);
+           if(reply == null)
+               return RespBean.error("该帖子已不存在！");
            if(replyService.deleteReplyById(id)==1){
-               Reply reply = replyService.getReplyById(id);
                //删除帖子的同时，需要将对应文章的回复数量减少（-1）
                Article article = articleService.getArticleById(reply.getAid());
                //判断文章回复数大于0时才可以进行-1操作

@@ -22,7 +22,7 @@
     </resultMap>
 
     <insert id="addNewReply" parameterType="org.sang.bean.Reply" useGeneratedKeys="true" keyProperty="id">
-         INSERT INTO Reply SET aid=#{aid},summary=#{summary},content=#{content},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},state=#{state}
+         INSERT INTO reply SET aid=#{aid},summary=#{summary},content=#{content},uid=#{uid},publishTime=#{publishTime},editTime=#{editTime},state=#{state}
     </insert>
 
     <select id="getReplyById" parameterType="Long" resultType="org.sang.bean.Reply">

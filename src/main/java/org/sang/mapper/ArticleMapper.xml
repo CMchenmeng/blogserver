@@ -67,7 +67,7 @@
         WHERE id=#{id}
     </update>
     <select id="getArticleByState" resultType="org.sang.bean.Article">
-        SELECT a.id,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        SELECT a.id,a.publishTime,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
         <!--<if test="state!=-2">
             and a.uid=#{uid}
@@ -85,7 +85,7 @@
     </select>
 
     <select id="getArticleByUserAndState" resultType="org.sang.bean.Article">
-        SELECT a.id,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        SELECT a.id,a.publishTime,a.`title`,a.`editTime`,a.summary,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and a.uid=#{uid}
         <!--<if test="state!=-2">
             and a.uid=#{uid}
@@ -102,7 +102,7 @@
         ORDER BY a.isTop DESC ,a.editTime DESC limit #{start},#{count};
     </select>
     <select id="getArticleByStateByAdmin" resultType="org.sang.bean.Article">
-        SELECT a.id,a.`title`,a.`editTime`,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        SELECT a.id,a.publishTime,a.`title`,a.`editTime`,a.`pageView`,a.`state`,a.`isTop`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and a.state=1
         <if test="keywords!=null">
             AND title LIKE concat('%',#{keywords},'%')
